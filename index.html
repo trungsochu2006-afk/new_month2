@@ -384,6 +384,7 @@
         padding: 30px;
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
       }
 
       .mauchuquizi {
@@ -414,15 +415,17 @@
       }
 
       .quiz-btn:hover {
-
         background: #132c63;
         transform: translateX(5px);
       }
 
       .countdown-screen {
-        //căn lề
         text-align: center;
         padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
       .cute-img {
         width: 200px;
@@ -667,7 +670,7 @@
       .thread-time {
         font-size: 13px;
         color: #777;
-        margin-left: auto;
+        margin-left: 15px;
       }
       .thread-text {
         font-size: 15px;
@@ -717,7 +720,7 @@
       .comment-item:last-child {
         border: none;
       }
-      /* CSS CHO MENU BA CHẤM THREAD (ĐÃ VIỆT HÓA) */
+      /* CSS CHO MENU BA CHẤM THREAD */
       .khung-menu-bai-viet {
         position: relative;
         margin-left: auto;
@@ -738,20 +741,20 @@
         color: #000;
       }
       .menu-lua-chon-tha-xuong {
-        display: none; /* Mặc định ẩn */
+        display: none;
         position: absolute;
         right: 0;
         top: 30px;
         background: white;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         z-index: 100;
         min-width: 120px;
         overflow: hidden;
       }
       .menu-lua-chon-tha-xuong.hien-thi {
-        display: block; /* Hiện khi có class 'hien-thi' */
+        display: block;
       }
       .muc-lua-chon-con {
         padding: 10px 15px;
@@ -771,7 +774,190 @@
       .muc-lua-chon-con.nut-xoa-bai:hover {
         background: #fff5f5;
       }
+
+      /* 🌟 CSS CHO MENU AVATAR TÀI KHOẢN */
+      .khung-tai-khoan {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .avatar-menu-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: #ffd700;
+        color: #132c63;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        overflow: hidden;
+        user-select: none;
+        box-sizing: border-box;
+      }
+      .avatar-menu-btn img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .menu-con-tai-khoan {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 45px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        min-width: 220px;
+        padding: 15px;
+        box-sizing: border-box;
+      }
+      .menu-con-tai-khoan.hien-thi-user {
+        display: block;
+      }
+      .thong-tin-user-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        text-align: left;
+      }
+      .nut-chuc-nang-user {
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 13px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+        background: none;
+        text-align: left;
+        transition: 0.2s;
+        color: #333;
+      }
+      .nut-chuc-nang-user:hover {
+        background: #f5f5f5;
+      }
+      .nut-chuc-nang-user.nut-dang-xuat-user {
+        color: #ff4d4d;
+        font-weight: bold;
+        margin-top: 5px;
+        border-top: 1px solid #eee;
+        border-radius: 0;
+        padding-top: 12px;
+      }
+      .nut-chuc-nang-user.nut-dang-xuat-user:hover {
+        background: #fff5f5;
+      }
+
+      /* =========================================
+         📱 CSS TỐI ƯU HÓA ĐẸP MẮT CHO ĐIỆN THOẠI (RESPONSIVE)
+         ========================================= */
+      @media (max-width: 768px) {
+        nav {
+          flex-direction: column;
+          gap: 12px;
+          padding: 15px 10px;
+          align-items: stretch;
+        }
+
+        .nav-links {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          width: 100%;
+        }
+
+        nav button {
+          margin-right: 0;
+          padding: 8px;
+          font-size: 14px;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 6px;
+          text-align: center;
+        }
+
+        nav > div:last-child {
+          width: 100%;
+          justify-content: space-between;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          padding-top: 10px;
+        }
+
+        header {
+          padding: 12px;
+          font-size: 20px;
+          gap: 10px;
+        }
+        .main-title {
+          font-size: 20px;
+        }
+        .ZALO {
+          font-size: 13px;
+        }
+        .logo {
+          width: 45px;
+        }
+
+        .nenchonmon {
+          margin: 15px 10px;
+          padding: 15px;
+          border-radius: 12px;
+        }
+
+        .mauchuquizi {
+          font-size: 22px;
+          margin-bottom: 20px;
+        }
+
+        .thread-card {
+          padding: 12px;
+          margin-bottom: 12px;
+          border-radius: 8px;
+        }
+        .thread-text {
+          font-size: 14px;
+        }
+        .thread-img {
+          max-height: 250px;
+        }
+        .comment-item {
+          font-size: 13px;
+        }
+
+        .dangnhap {
+          padding: 24px 20px 0 20px;
+          width: 95%;
+        }
+        .dangnhap h2 {
+          font-size: 22px;
+        }
+        .welcome-footer {
+          margin: 0 -20px;
+          padding: 15px 20px;
+        }
+
+        #emergency-exit-box {
+          position: static;
+          text-align: right;
+          margin-bottom: 10px;
+          width: 100%;
+        }
+        #emergency-exit-box button {
+          padding: 6px 12px;
+          font-size: 13px;
+        }
+      }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   </head>
 
   <body>
@@ -820,14 +1006,142 @@
         <button onclick="showTab('shop')">Mua Hàng Tại Shopee</button>
         <button onclick="showTab('threads')">Thread phenikaa</button>
       </div>
-      <div class="online-counter-box">
-        <span class="online-dot"></span>
-        <span>Người Đang Học:</span>
-        <script id="_waugsm">
-          var _wau = _wau || [];
-          _wau.push(["dynamic", "uo67fow0y6", "gsm", "c4302bffffff", "small"]);
-        </script>
-        <script async src="//waust.at/d.js"></script>
+      <div style="display: flex; align-items: center; gap: 15px">
+        <!-- 🌟 KHU VỰC ĐẾM NGƯỜI ONLINE ĐÃ ĐƯỢC TÀNG HÌNH Ô ĐỎ VÔ DUYÊN -->
+        <div
+          class="online-counter-box"
+          style="
+            background: transparent; /* Đã bỏ nền mờ để tàng hình */
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none; /* Đã bỏ viền thô */
+          "
+        >
+          <span class="online-dot" style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block;"></span>
+          <span
+            style="
+              color: #ffd700;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            "
+          >
+            Người Đang Học:
+            <script id="_waugsm">
+              var _wau = _wau || [];
+              _wau.push([
+                "dynamic",
+                "uo67fow0y6",
+                "gsm",
+                "132c63ffd700", /* 🌟 THẦN CHÚ: 132c63 (nền xanh tiệp màu nav) + ffd700 (chữ vàng gold) */
+                "small",
+              ]);
+            </script>
+            <script async src="https://waust.at/d.js"></script>
+          </span>
+        </div>
+            </script>
+            <script async src="https://waust.at/d.js"></script>
+          </span>
+        </div>
+
+        <div class="khung-tai-khoan">
+          <div
+            class="avatar-menu-btn"
+            id="avatar-nut-bam"
+            onclick="toggleUserMenu(event)"
+          >
+            <span id="avatar-chu-cai">U</span>
+          </div>
+
+          <div class="menu-con-tai-khoan" id="menu-tha-tai-khoan">
+            <div
+              class="thong-tin-user-header"
+              style="display: flex; flex-direction: column; gap: 8px"
+            >
+              <span
+                style="
+                  font-size: 12px;
+                  color: #132c63;
+                  font-weight: bold;
+                  text-align: left;
+                "
+                >Chỉnh sửa tài khoản:</span
+              >
+              <input
+                type="text"
+                id="menu-input-ten"
+                placeholder="Họ và Tên"
+                style="
+                  width: 100%;
+                  padding: 6px 8px;
+                  border: 1px solid #ddd;
+                  border-radius: 4px;
+                  font-size: 13px;
+                  outline: none;
+                  box-sizing: border-box;
+                "
+              />
+              <input
+                type="text"
+                id="menu-input-mssv"
+                placeholder="Mã số sinh viên"
+                style="
+                  width: 100%;
+                  padding: 6px 8px;
+                  border: 1px solid #ddd;
+                  border-radius: 4px;
+                  font-size: 13px;
+                  outline: none;
+                  box-sizing: border-box;
+                "
+              />
+              <button
+                onclick="luuThayDoiTaiKhoan()"
+                style="
+                  width: 100%;
+                  background: #28a745;
+                  color: white;
+                  border: none;
+                  padding: 7px;
+                  border-radius: 4px;
+                  font-size: 12px;
+                  font-weight: bold;
+                  cursor: pointer;
+                  transition: 0.2s;
+                "
+              >
+                💾 Lưu thay đổi
+              </button>
+            </div>
+
+            <label
+              class="nut-chuc-nang-user"
+              style="margin: 0; cursor: pointer"
+            >
+              📷 Đổi ảnh đại diện
+              <input
+                type="file"
+                id="user-avatar-upload"
+                accept="image/*"
+                style="display: none"
+                onchange="capNhatAvatarTaiKhoan(this)"
+              />
+            </label>
+
+            <button
+              class="nut-chuc-nang-user nut-dang-xuat-user"
+              onclick="dangXuatTaiKhoan()"
+            >
+              🚪 Đăng xuất tài khoản
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -888,7 +1202,13 @@
       <div class="nenchonmon">
         <div
           id="emergency-exit-box"
-          style="display: none; text-align: right; margin-bottom: 15px"
+          style="
+            display: none;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+          "
         >
           <button
             onclick="emergencyExit()"
@@ -1048,7 +1368,7 @@
         </div>
 
         <div id="quiz-leaderboard" class="quiz-sub-tab" style="display: none">
-          <div class="mauchuquizi]" id="leaderboard-title">BẢNG XẾP HẠNG</div>
+          <div class="mauchuquizi" id="leaderboard-title">BẢNG XẾP HẠNG</div>
           <div style="max-height: 300px; overflow-y: auto">
             <table class="leaderboard-table">
               <thead>
@@ -1077,14 +1397,13 @@
         </div>
       </div>
     </div>
-    <!-- PHÂN HỆ THREAD PHENIKAA MỚI -->
+
     <div id="threads" class="section">
       <div class="nenchonmon" style="max-width: 650px; margin: 20px auto">
         <div class="mauchuquizi" style="margin-bottom: 15px">
           THREAD PHENIKAA
         </div>
 
-        <!-- Khung tạo bài viết mới -->
         <div
           style="
             background: white;
@@ -1119,7 +1438,6 @@
               margin-top: 10px;
             "
           >
-            <!-- Nút chọn ảnh từ thiết bị -->
             <label
               style="
                 background: #f1f3f4;
@@ -1156,7 +1474,6 @@
               Đăng bài
             </button>
           </div>
-          <!-- Khu vực hiển thị tên file ảnh đã chọn tạm thời -->
           <div
             id="image-preview-name"
             style="
@@ -1168,10 +1485,10 @@
           ></div>
         </div>
 
-        <!-- Nơi nạp danh sách các dòng trạng thái bài viết -->
         <div id="threads-list"></div>
       </div>
     </div>
+
     <div class="modal" id="videoModal">
       <button class="back-btn" onclick="closeVideo()">← Trang chủ</button>
       <video
@@ -1253,9 +1570,52 @@
       }
 
       /* =========================================
-         LOGIC LƯU THÔNG TIN SINH VIÊN BAN ĐẦU
+         🌟 KHỞI TẠO BIẾN CHẠY VÀ CẤU HÌNH CLOUD FIREBASE TRƯỚC (QUAN TRỌNG)
          ========================================= */
       let currentStudent = { name: "", id: "" };
+
+      // ⚠️ ĐỒNG BỘ: Nhớ thay cấu hình Firebase chính chủ của bạn vào đây sau khi tạo project xong
+      const firebaseConfig = {
+        apiKey: "AIzaSyB-4sdYIrm5CtrloB1BHKhwzidJuuqdssg",
+        authDomain: "threads-phenikaa.firebaseapp.com",
+        databaseURL:
+          "https://threads-phenikaa-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "threads-phenikaa",
+        storageBucket: "threads-phenikaa.firebasestorage.app",
+        messagingSenderId: "974324685359",
+        appId: "1:974324685359:web:3b876af550d0b5de5504da",
+        measurementId: "G-GEXKM5F77L",
+      };
+
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      const database = firebase.database();
+
+      // Sự kiện kích hoạt tải DOM và chạy đồng bộ
+      document.addEventListener("DOMContentLoaded", function () {
+        let savedStudent = localStorage.getItem("current_logged_student");
+        if (savedStudent) {
+          currentStudent = JSON.parse(savedStudent);
+          let welcomeScreen = document.getElementById("welcome-screen");
+          if (welcomeScreen) welcomeScreen.style.display = "none";
+        }
+
+        hienThiGiaoDienTaiKhoan();
+
+        let fileInput = document.getElementById("thread-image");
+        if (fileInput) {
+          fileInput.addEventListener("change", function () {
+            let pName = document.getElementById("image-preview-name");
+            if (this.files && this.files[0]) {
+              pName.innerText = "📎 Đã chọn: " + this.files[0].name;
+            } else {
+              pName.innerText = "";
+            }
+          });
+        }
+        renderThreads();
+      });
 
       function submitStudentInfo() {
         let nameInput = document.getElementById("student-name").value.trim();
@@ -1270,13 +1630,19 @@
 
         currentStudent.name = nameInput;
         currentStudent.id = idInput;
+
+        localStorage.setItem(
+          "current_logged_student",
+          JSON.stringify(currentStudent),
+        );
+        hienThiGiaoDienTaiKhoan();
         document.getElementById("welcome-screen").style.display = "none";
+        renderThreads();
       }
 
       /* =========================================
          LOGIC XỬ LÝ PHÂN HỆ TRẮC NGHIỆM
          ========================================= */
-      // 🌟 PHỤC HỒI HOÀN TOÀN KHAI BÁO BIẾN ĐỂ TRÁNH LỖI ĐƠ NÚT TRÊN TRÌNH DUYỆT
       let selectedSubject = "";
       let selectedChapter = "";
       let questionsPool = [];
@@ -1300,7 +1666,6 @@
       });
 
       const originalQuestions = [
-        // === PHẦN TỪ VỰNG VÀ NGỮ PHÁP (VOCABULARY & GRAMMAR) ===
         {
           q: "______ use green as their symbol. Obviously, this color is associated with nature.",
           options: {
@@ -1323,32 +1688,17 @@
         },
         {
           q: "The Colombian teacher has brought a fresh ______ to the subject.",
-          options: {
-            A: "wage",
-            B: "flow",
-            C: "perspective",
-            D: "statue",
-          },
+          options: { A: "wage", B: "flow", C: "perspective", D: "statue" },
           answer: "C",
         },
         {
           q: "The ______ of taiko is that it's not about drumming. It's the unity of the drummers.",
-          options: {
-            A: "identity",
-            B: "similarity",
-            C: "beat",
-            D: "essence",
-          },
+          options: { A: "identity", B: "similarity", C: "beat", D: "essence" },
           answer: "D",
         },
         {
           q: "The eyes are often a person's most interesting facial ______.",
-          options: {
-            A: "signal",
-            B: "figure",
-            C: "feature",
-            D: "character",
-          },
+          options: { A: "signal", B: "figure", B: "feature", D: "character" },
           answer: "C",
         },
         {
@@ -1373,22 +1723,12 @@
         },
         {
           q: "One per cent of the world's population owns forty per cent of the world's ______.",
-          options: {
-            A: "income",
-            B: "wealth",
-            C: "poverty",
-            D: "salary",
-          },
+          options: { A: "income", B: "wealth", C: "poverty", D: "salary" },
           answer: "B",
         },
         {
           q: "Work that is ______ or involves handling small objects will be at risk of automation.",
-          options: {
-            A: "repetitive",
-            B: "fast",
-            C: "exciting",
-            D: "lucky",
-          },
+          options: { A: "repetitive", B: "fast", C: "exciting", D: "lucky" },
           answer: "A",
         },
         {
@@ -1403,22 +1743,12 @@
         },
         {
           q: "The truth is that the sun always ______ in the east.",
-          options: {
-            A: "rose",
-            B: "rising",
-            C: "rises",
-            D: "rise",
-          },
+          options: { A: "rose", B: "rising", C: "rises", D: "rise" },
           answer: "C",
         },
         {
           q: "I ______ for my sunglasses - Have you seen it?",
-          options: {
-            A: "looks",
-            B: "looked",
-            C: "look",
-            D: "am looking",
-          },
+          options: { A: "looks", B: "looked", C: "look", D: "am looking" },
           answer: "D",
         },
         {
@@ -1433,26 +1763,16 @@
         },
         {
           q: "Have you been to the national museum ______?",
-          options: {
-            A: "just",
-            B: "ever",
-            C: "yet",
-            D: "already",
-          },
+          options: { A: "just", B: "ever", C: "yet", D: "already" },
           answer: "C",
         },
         {
           q: '\"What time ______ our sales manager?\" - \"At ten o\'clock yesterday morning.\"',
-          options: {
-            A: "do you met",
-            B: "met",
-            C: "did you meet",
-            D: "meets",
-          },
+          options: { A: "do you met", B: "met", C: "did you meet", D: "meets" },
           answer: "C",
         },
         {
-          q: "Could you tell me when ______?",
+          q: "Congressional candidates when ______?",
           options: {
             A: "the shop close",
             B: "does the shop close",
@@ -1476,33 +1796,21 @@
           options: {
             A: "might do",
             B: "do",
-            C: "am going to do",
+            B: "am going to do",
             D: "will do",
           },
           answer: "C",
         },
         {
           q: "The changes of our office's location are not important. They ______ affect our work.",
-          options: {
-            A: "needn't",
-            B: "mightn't",
-            C: "will",
-            D: "would",
-          },
+          options: { A: "needn't", B: "mightn't", C: "will", D: "would" },
           answer: "B",
         },
         {
           q: "Is it true that Anna is leaving? - Yes, she ______ married next month.",
-          options: {
-            A: "is getting",
-            B: "gets",
-            C: "got",
-            D: "will",
-          },
+          options: { A: "is getting", B: "gets", C: "got", D: "will" },
           answer: "A",
         },
-
-        // === PHẦN VIẾT/SẮP XẾP CÂU (WRITING - SENTENCE BUILDING) ===
         {
           q: "Peter/always/talk/during/movie/. /lt/so/annoying/!",
           options: {
@@ -1553,8 +1861,6 @@
           },
           answer: "D",
         },
-
-        // === PHẦN CÂU ĐỒNG NGHĨA (SAME MEANING SENTENCES) ===
         {
           q: "The travel company booked everything for us on our family trip to Singapore.",
           options: {
@@ -1636,7 +1942,6 @@
 
       function demnguoc() {
         showQuizSubTab("quiz-countdown");
-        // 🌟 THÊM LỆNH NÀY: Hiện nút Hủy khi màn hình đếm ngược bắt đầu chạy
         document.getElementById("emergency-exit-box").style.display = "block";
         let count = 3;
         const timerEl = document.getElementById("countdown-timer");
@@ -1800,7 +2105,6 @@
           (Date.now() - quizStartTime) / 1000,
         );
         saveToLeaderboard(totalDurationSeconds);
-        // 🌟 THÊM LỆNH NÀY: Ẩn nút đi ngay khi nạp màn hình kết quả ăn mừng
         document.getElementById("emergency-exit-box").style.display = "none";
         victorySound.currentTime = 0;
         victorySound.play().catch(() => {});
@@ -1814,7 +2118,6 @@
         let data = localStorage.getItem("quiz_leaderboard");
         let leaderboard = data ? JSON.parse(data) : [];
 
-        // 🔎 Tìm xem sinh viên này đã từng làm bài MÔN này và CHƯƠNG này chưa (Dựa vào MSSV)
         let existingRecordIndex = leaderboard.findIndex(
           (item) =>
             item.id === currentStudent.id &&
@@ -1823,13 +2126,11 @@
         );
 
         if (existingRecordIndex !== -1) {
-          // Nếu đã có kết quả cũ, kiểm tra xem thời gian mới (duration) có NHANH HƠN (nhỏ hơn) không
           if (duration < leaderboard[existingRecordIndex].duration) {
-            leaderboard[existingRecordIndex].duration = duration; // Cập nhật lại thời gian nhanh nhất
+            leaderboard[existingRecordIndex].duration = duration;
             leaderboard[existingRecordIndex].timestamp = Date.now();
           }
         } else {
-          // Nếu đây là lần đầu tiên nick này làm bài chương này, thêm mới bình thường
           leaderboard.push({
             name: currentStudent.name,
             id: currentStudent.id,
@@ -1839,7 +2140,6 @@
             timestamp: Date.now(),
           });
         }
-
         localStorage.setItem("quiz_leaderboard", JSON.stringify(leaderboard));
       }
 
@@ -1865,41 +2165,33 @@
       }
 
       function goBackFromLeaderboard() {
-        showQuizSubTab(
-          correctAnswersSet.size === originalQuestions.length
-            ? "quiz-result"
-            : "quiz-chapters",
-        );
+        document.getElementById("emergency-exit-box").style.display = "none";
+        if (correctAnswersSet.size === originalQuestions.length) {
+          showQuizSubTab("quiz-result");
+        } else {
+          showQuizSubTab("quiz-chapters");
+        }
       }
       function restartQuiz() {
         victorySound.pause();
         victorySound.currentTime = 0;
         demnguoc();
       }
-      // Hàm thoát khẩn cấp khi đang làm bài, quay về màn hình Chọn Môn Học
       function thoatchuongtrinh() {
-        // Tắt nhạc chiến thắng nếu có đang phát
         if (typeof victorySound !== "undefined") {
           victorySound.pause();
           victorySound.currentTime = 0;
         }
-
-        // Reset lại các trạng thái làm bài để lượt sau làm lại từ đầu
         isRepeatMode = false;
         wrongQuestionsQueue = [];
         correctAnswersSet.clear();
         userResponses = {};
         currentQuestionIdx = 0;
-
-        // Ép giao diện chuyển sang tab Trắc nghiệm và hiện khung Chọn Môn Học
         showTab("quiz");
         showQuizSubTab("quiz-subjects");
       }
-      // Dán đoạn này vào cuối phần script của bạn
       function emergencyExit() {
-        console.log("Đang thoát khẩn cấp..."); // Dòng này để kiểm tra xem nút có ăn hay không
-
-        // 1. Tắt âm thanh nếu đang phát
+        console.log("Đang thoát khẩn cấp...");
         if (typeof victorySound !== "undefined") {
           victorySound.pause();
           victorySound.currentTime = 0;
@@ -1908,59 +2200,55 @@
           countdownSound.pause();
           countdownSound.currentTime = 0;
         }
-
-        // 2. Ẩn hộp nút hủy bài
         let exitBox = document.getElementById("emergency-exit-box");
-        if (exitBox) {
-          exitBox.style.display = "none";
-        }
+        if (exitBox) exitBox.style.display = "none";
 
-        // 3. Reset các biến trạng thái về mặc định
         isRepeatMode = false;
         wrongQuestionsQueue = [];
-        if (typeof correctAnswersSet !== "undefined") {
-          correctAnswersSet.clear();
-        }
+        correctAnswersSet.clear();
         userResponses = {};
         currentQuestionIdx = 0;
 
-        // 4. Quay về màn hình chọn môn học
-        // Đảm bảo hàm showTab và showQuizSubTab của bạn tên đúng như vậy
-        if (typeof showTab === "function") {
-          showTab("quiz");
-        }
-        if (typeof showQuizSubTab === "function") {
-          showQuizSubTab("quiz-subjects");
-        }
+        showTab("quiz");
+        showQuizSubTab("quiz-subjects");
       }
-      function goBackFromLeaderboard() {
-        // Ẩn hộp nút hủy làm bài khi ở giao diện ngoài
-        document.getElementById("emergency-exit-box").style.display = "none";
 
-        if (correctAnswersSet.size === originalQuestions.length) {
-          showQuizSubTab("quiz-result");
-        } else {
-          showQuizSubTab("quiz-chapters");
-        }
-      }
-      // Sự kiện báo tên file khi chọn ảnh
-      document.addEventListener("DOMContentLoaded", function () {
-        let fileInput = document.getElementById("thread-image");
-        if (fileInput) {
-          fileInput.addEventListener("change", function () {
-            let pName = document.getElementById("image-preview-name");
-            if (this.files && this.files[0]) {
-              pName.innerText = "📎 Đã chọn: " + this.files[0].name;
-            } else {
-              pName.innerText = "";
+      /* =========================================
+         🌟 MẠNG XÃ HỘI THREAD PHENIKAA CHẠY THỜI GIAN THỰC (REAL-TIME CLOUD)
+         ========================================= */
+
+      // 🛠️ HÀM TỰ ĐỘNG NÉN ẢNH CHỐNG ĐƠ NÚT ĐĂNG BÀI KHI CHỌN FILE NẶNG
+      function nenAnhThread(base64Str, maxWidth, maxHeight, callback) {
+        let img = new Image();
+        img.src = base64Str;
+        img.onload = function () {
+          let canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
             }
-          });
-        }
-        // Tự động render danh sách thread lần đầu
-        renderThreads();
-      });
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          let ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
 
-      // Hàm đăng bài viết mới
+          // Nén chất lượng ảnh xuống 0.7 (Giảm 80% dung lượng file thừa)
+          let compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+          callback(compressedBase64);
+        };
+      }
+
+      // Hàm đăng bài viết mới lên đám mây Firebase (ĐÃ TÍCH HỢP HÀM NÉN ĐỘC QUYỀN)
       function createNewPost() {
         let content = document.getElementById("thread-content").value.trim();
         let fileInput = document.getElementById("thread-image");
@@ -1970,7 +2258,6 @@
           return;
         }
 
-        // Lấy tên học sinh đã đăng nhập, nếu chưa có thì dùng ẩn danh
         let authorName =
           currentStudent && currentStudent.name
             ? currentStudent.name
@@ -1985,130 +2272,216 @@
           text: content,
           image: "",
           likes: 0,
-          likedUsers: [], // Lưu những MSSV đã thả tim bài này
+          likedUsers: [],
           comments: [],
-          time: "Vừa xong",
+          time: Date.now(),
         };
 
-        // Nếu có đăng tải kèm hình ảnh
         if (fileInput.files && fileInput.files[0]) {
           let reader = new FileReader();
           reader.onload = function (e) {
-            newPost.image = e.target.result; // Lưu dữ liệu ảnh Base64
-            savePostToStorage(newPost);
+            // Chạy qua bộ lọc nén ảnh trước khi tải lên Firebase
+            nenAnhThread(
+              e.target.result,
+              800,
+              600,
+              function (compressedResult) {
+                newPost.image = compressedResult;
+                database
+                  .ref("threads/" + newPost.id)
+                  .set(newPost)
+                  .then(() => {
+                    resetKhungNhapThread();
+                  })
+                  .catch((error) => {
+                    alert("Lỗi đăng bài: " + error.message);
+                  });
+              },
+            );
           };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
-          savePostToStorage(newPost);
+          database
+            .ref("threads/" + newPost.id)
+            .set(newPost)
+            .then(() => {
+              resetKhungNhapThread();
+            })
+            .catch((error) => {
+              alert("Lỗi đăng bài: " + error.message);
+            });
         }
       }
 
-      function savePostToStorage(postObj) {
-        let data = localStorage.getItem("phenikaa_threads");
-        let posts = data ? JSON.parse(data) : [];
-        posts.unshift(postObj); // Bài mới lên đầu
-        localStorage.setItem("phenikaa_threads", JSON.stringify(posts));
-
-        // Reset khung nhập dữ liệu
+      function resetKhungNhapThread() {
         document.getElementById("thread-content").value = "";
         document.getElementById("thread-image").value = "";
-        document.getElementById("image-preview-name").innerText = "";
-
-        renderThreads();
+        let pName = document.getElementById("image-preview-name");
+        if (pName) pName.innerText = "";
       }
 
-      // Hàm hiển thị danh sách bài viết
+      // Hàm lắng nghe Firebase và vẽ giao diện đồng bộ tức thì (Real-time)
       function renderThreads() {
         let container = document.getElementById("threads-list");
         if (!container) return;
 
-        let data = localStorage.getItem("phenikaa_threads");
-        let posts = data ? JSON.parse(data) : [];
-
-        container.innerHTML = "";
         let currentUserId =
-          currentStudent && currentStudent.id ? currentStudent.id : "guest";
+          currentStudent && currentStudent.id ? currentStudent.id.trim() : "";
+        const adminId = "7277979906";
 
-        if (posts.length === 0) {
-          container.innerHTML =
-            "<div style='color:#777; margin-top:20px;'>Chưa có bài đăng nào. Hãy là người đầu tiên bóc tem Thread Phenikaa nào!</div>";
-          return;
-        }
+        database.ref("threads").on("value", (snapshot) => {
+          let threadsData = snapshot.val();
+          container.innerHTML = "";
 
-        posts.forEach((post) => {
-          let isLiked =
-            post.likedUsers && post.likedUsers.includes(currentUserId);
-          let heartColor = isLiked ? "❤️" : "🤍";
-
-          let imageHtml = post.image
-            ? `<img src="${post.image}" class="thread-img"/>`
-            : "";
-
-          // Render danh sách bình luận
-          let commentsHtml = "";
-          if (post.comments && post.comments.length > 0) {
-            commentsHtml = `<div class="comment-box">`;
-            post.comments.forEach((cmt) => {
-              commentsHtml += `<div class="comment-item"><b>${cmt.user}:</b> ${cmt.text}</div>`;
-            });
-            commentsHtml += `</div>`;
+          if (!threadsData) {
+            container.innerHTML =
+              "<div style='color:#777; margin-top:20px;'>Chưa có bài đăng nào. Hãy là người đầu tiên bóc tem Thread Phenikaa nào!</div>";
+            return;
           }
 
-          let cardHtml = `
-            <div class="thread-card">
-              <div class="thread-user-box">
-                <div class="thread-avatar">${post.author.charAt(0).toUpperCase()}</div>
-                <div>
-                  <div class="thread-username">${post.author}</div>
-                  <div style="font-size:11px; color:#999; text-align:left;">MSSV: ${post.mssv}</div>
+          let posts = Object.values(threadsData);
+          posts.sort((a, b) => b.time - a.time);
+
+          posts.forEach((post) => {
+            let isLiked =
+              post.likedUsers &&
+              Object.values(post.likedUsers).includes(currentUserId);
+            let heartColor = isLiked ? "❤️" : "🤍";
+            let imageHtml = post.image
+              ? `<img src="${post.image}" class="thread-img"/>`
+              : "";
+
+            // Render danh sách comment từ dữ liệu đám mây
+            let commentsHtml = "";
+            if (post.comments) {
+              commentsHtml = `<div class="comment-box">`;
+              let rawComments = Object.values(post.comments);
+              rawComments.forEach((cmt) => {
+                let cmtTichXanh = "";
+                let cmtAvatarHtml = "";
+
+                if (
+                  cmt.user === "trung_admin" ||
+                  (cmt.mssv && cmt.mssv.trim() === adminId)
+                ) {
+                  cmtTichXanh = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 13px; height: 15px; object-fit: contain; margin-left: 4px; vertical-align: middle;" />`;
+                }
+
+                let cmtUid = cmt.mssv ? cmt.mssv.trim() : "";
+                let savedCmtAvatar = localStorage.getItem(
+                  "user_avatar_base64_" + cmtUid,
+                );
+
+                if (savedCmtAvatar) {
+                  cmtAvatarHtml = `<img src="${savedCmtAvatar}" style="width:24px; height:24px; object-fit:cover; border-radius:50%; margin-right:5px; vertical-align: middle; display:inline-block;" />`;
+                } else {
+                  let chuCaiCmt = cmt.user
+                    ? cmt.user.charAt(0).toUpperCase()
+                    : "U";
+                  cmtAvatarHtml = `<div style="width:24px; height:24px; background:#132c63; color:white; font-size:11px; font-weight:bold; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-right:5px; vertical-align: middle;">${chuCaiCmt}</div>`;
+                }
+
+                commentsHtml += `<div class="comment-item" style="display: flex; align-items: center; gap: 4px; padding: 8px 0; border-bottom: 1px dashed #eee; text-align:left;">${cmtAvatarHtml}<span><b>${cmt.user}${cmtTichXanh}:</b> ${cmt.text}</span></div>`;
+              });
+              commentsHtml += `</div>`;
+            }
+
+            let tichXanhHtml = "";
+            if (post.mssv && post.mssv.trim() === adminId) {
+              tichXanhHtml = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 15px; height: 15px; object-fit: contain; margin-left: 5px; vertical-align: middle;" />`;
+            }
+
+            let postAvatarHtml = `<div class="thread-avatar">${post.author.charAt(0).toUpperCase()}</div>`;
+            if (post.mssv) {
+              let savedPostAvatar = localStorage.getItem(
+                "user_avatar_base64_" + post.mssv.trim(),
+              );
+              if (savedPostAvatar) {
+                postAvatarHtml = `<div class="thread-avatar" style="overflow:hidden;"><img src="${savedPostAvatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
+              }
+            }
+
+            let menuHtml = "";
+            if (currentUserId !== "") {
+              if (currentUserId === adminId) {
+                menuHtml = `
+                  <div class="khung-menu-bai-viet">
+                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
+                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
+                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài (Admin)</div>
+                    </div>
+                  </div>`;
+              } else if (post.mssv && post.mssv.trim() === currentUserId) {
+                menuHtml = `
+                  <div class="khung-menu-bai-viet">
+                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
+                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
+                      <div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>
+                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài</div>
+                    </div>
+                  </div>`;
+              }
+            }
+
+            let thoiGianHienThi =
+              typeof post.time === "number"
+                ? tinhThoiGianTroiQua(post.time)
+                : post.time;
+
+            let cardHtml = `
+              <div class="thread-card" id="card-${post.id}">
+                <div class="thread-user-box">
+                  ${postAvatarHtml}
+                  <div>
+                    <div class="thread-username" style="display: flex; align-items: center; font-weight: bold;">${post.author} ${tichXanhHtml}</div>
+                  </div>
+                  <div class="thread-time">${thoiGianHienThi}</div>
+                  ${menuHtml}
                 </div>
-                <div class="thread-time">${post.time}</div>
-              </div>
-
-              <p class="thread-text">${post.text}</p>
-              ${imageHtml}
-
-              <div class="thread-actions">
-                <div class="action-btn" onclick="likePost('${post.id}')">${heartColor} <span>${post.likes || 0}</span></div>
-                <div class="action-btn" onclick="focusCommentInput('${post.id}')">💬 <span>${post.comments ? post.comments.length : 0}</span></div>
-              </div>
-
-              ${commentsHtml}
-
-              <!-- Ô gõ bình luận -->
-              <div style="display:flex; gap:8px; margin-top:10px;">
-                <input type="text" id="input-cmt-${post.id}" placeholder="Viết bình luận công khai..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:16px; font-size:13px; outline:none;"/>
-                <button onclick="submitComment('${post.id}')" style="background:#254196; color:white; border:none; padding:6px 12px; border-radius:16px; font-size:13px; cursor:pointer;">Gửi</button>
-              </div>
-            </div>
-          `;
-          container.innerHTML += cardHtml;
+                <p class="thread-text" id="text-${post.id}">${post.text}</p>
+                ${imageHtml}
+                <div class="thread-actions">
+                  <div class="action-btn" onclick="likePost('${post.id}')">${heartColor} <span>${post.likes || 0}</span></div>
+                  <div class="action-btn" onclick="focusCommentInput('${post.id}')">💬 <span>${post.comments ? Object.keys(post.comments).length : 0}</span></div>
+                </div>
+                ${commentsHtml}
+                <div style="display:flex; gap:8px; margin-top:10px; padding-top:5px;">
+                  <input type="text" id="input-cmt-${post.id}" placeholder="Viết bình luận công khai..." style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:16px; font-size:13px; outline:none"/>
+                  <button type="button" onclick="submitComment('${post.id}')" style="background:#254196; color:white; border:none; padding:6px 12px; border-radius:16px; font-size:13px; cursor:pointer; font-weight:bold;">Gửi</button>
+                </div>
+              </div>`;
+            container.innerHTML += cardHtml;
+          });
         });
       }
 
-      // Hàm tương tác Thả tim / Like
       function likePost(postId) {
-        let data = localStorage.getItem("phenikaa_threads");
-        if (!data) return;
-        let posts = JSON.parse(data);
         let currentUserId =
-          currentStudent && currentStudent.id ? currentStudent.id : "guest";
+          currentStudent && currentStudent.id
+            ? currentStudent.id.trim()
+            : "guest";
+        if (currentUserId === "guest") return;
 
-        let post = posts.find((p) => p.id === postId);
-        if (post) {
-          if (!post.likedUsers) post.likedUsers = [];
+        let postRef = database.ref(`threads/${postId}`);
+        postRef.once("value", (snapshot) => {
+          let post = snapshot.val();
+          if (post) {
+            if (!post.likedUsers) post.likedUsers = {};
+            let likedArray = Object.values(post.likedUsers);
 
-          let userIndex = post.likedUsers.indexOf(currentUserId);
-          if (userIndex === -1) {
-            post.likedUsers.push(currentUserId);
-            post.likes = (post.likes || 0) + 1;
-          } else {
-            post.likedUsers.splice(userIndex, 1);
-            post.likes = Math.max(0, (post.likes || 1) - 1);
+            let index = likedArray.indexOf(currentUserId);
+            if (index === -1) {
+              postRef.child("likedUsers").push(currentUserId);
+              postRef.child("likes").set((post.likes || 0) + 1);
+            } else {
+              let userKey = Object.keys(post.likedUsers).find(
+                (key) => post.likedUsers[key] === currentUserId,
+              );
+              if (userKey) postRef.child(`likedUsers/${userKey}`).remove();
+              postRef.child("likes").set(Math.max(0, (post.likes || 1) - 1));
+            }
           }
-          localStorage.setItem("phenikaa_threads", JSON.stringify(posts));
-          renderThreads();
-        }
+        });
       }
 
       function focusCommentInput(postId) {
@@ -2116,34 +2489,248 @@
         if (el) el.focus();
       }
 
-      // Hàm gửi bình luận
       function submitComment(postId) {
         let inputEl = document.getElementById(`input-cmt-${postId}`);
         if (!inputEl) return;
         let cmtText = inputEl.value.trim();
         if (!cmtText) return;
 
-        let data = localStorage.getItem("phenikaa_threads");
-        if (!data) return;
-        let posts = JSON.parse(data);
+        let currentUser =
+          currentStudent && currentStudent.name
+            ? currentStudent.name
+            : "Sinh viên ẩn danh";
+        let currentUid =
+          currentStudent && currentStudent.id ? currentStudent.id.trim() : "";
 
-        let post = posts.find((p) => p.id === postId);
-        if (post) {
-          if (!post.comments) post.comments = [];
-          let currentUser =
-            currentStudent && currentStudent.name
-              ? currentStudent.name
-              : "Sinh viên ẩn danh";
+        let newComment = {
+          user: currentUser,
+          mssv: currentUid,
+          text: cmtText,
+          timestamp: Date.now(),
+        };
 
-          post.comments.push({
-            user: currentUser,
-            text: cmtText,
-            timestamp: Date.now(),
+        database
+          .ref(`threads/${postId}/comments`)
+          .push(newComment)
+          .then(() => {
+            inputEl.value = "";
           });
+      }
 
-          localStorage.setItem("phenikaa_threads", JSON.stringify(posts));
-          inputEl.value = "";
-          renderThreads();
+      function toggleThreadMenu(event, postId) {
+        event.stopPropagation();
+        document
+          .querySelectorAll(".menu-lua-chon-tha-xuong")
+          .forEach((menu) => {
+            if (menu.id !== `menu-${postId}`) menu.classList.remove("hien-thi");
+          });
+        let targetMenu = document.getElementById(`menu-${postId}`);
+        if (targetMenu) targetMenu.classList.toggle("hien-thi");
+      }
+
+      function deletePost(postId) {
+        if (confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
+          database.ref("threads/" + postId).remove();
+        }
+      }
+
+      /* Các hàm phụ trợ khác giữ nguyên */
+      function editPost(postId) {
+        let textElement = document.getElementById(`text-${postId}`);
+        if (!textElement) return;
+        let currentText = textElement.innerText;
+        textElement.innerHTML = `
+          <div style="margin-top: 10px;">
+            <textarea id="edit-input-${postId}" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #005da3; border-radius: 6px; outline: none; resize: none; font-family: inherit; font-size: 14px; box-sizing: border-box;">${currentText}</textarea>
+            <div style="text-align: right; margin-top: 5px;">
+              <button onclick="cancelEdit('${postId}', \`${currentText}\`)" style="background: #6c757d; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; margin-right: 5px;">Hủy</button>
+              <button onclick="saveEditPost('${postId}')" style="background: #28a745; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: bold;">Lưu lại</button>
+            </div>
+          </div>`;
+      }
+
+      function cancelEdit(postId, originalText) {
+        let textElement = document.getElementById(`text-${postId}`);
+        if (textElement) textElement.innerText = originalText;
+      }
+
+      function saveEditPost(postId) {
+        let inputEl = document.getElementById(`edit-input-${postId}`);
+        if (!inputEl) return;
+        let newContent = inputEl.value.trim();
+        if (!newContent) {
+          alert("Nội dung không được để trống!");
+          return;
+        }
+        database.ref(`threads/${postId}/text`).set(newContent);
+      }
+
+      function tinhThoiGianTroiQua(timestamp) {
+        if (!timestamp) return "Vừa xong";
+        let bayGio = Date.now();
+        let chenhLech = Math.floor((bayGio - timestamp) / 1000);
+        if (chenhLech < 60) return "Vừa xong";
+        let phut = Math.floor(chenhLech / 60);
+        if (phut < 60) return phut + " phút trước";
+        let gio = Math.floor(phut / 60);
+        if (gio < 24) return gio + " giờ trước";
+        let ngay = Math.floor(gio / 24);
+        if (ngay < 30) return ngay + " ngày trước";
+        let thang = Math.floor(ngay / 30);
+        return thang + " tháng trước";
+      }
+
+      function toggleUserMenu(event) {
+        event.stopPropagation();
+        let menu = document.getElementById("menu-tha-tai-khoan");
+        if (menu) {
+          menu.classList.toggle("hien-thi-user");
+          if (menu.classList.contains("hien-thi-user")) {
+            if (document.getElementById("menu-input-ten")) {
+              document.getElementById("menu-input-ten").value =
+                currentStudent.name || "";
+              document.getElementById("menu-input-ten").onclick = function (e) {
+                e.stopPropagation();
+              };
+            }
+            if (document.getElementById("menu-input-mssv")) {
+              document.getElementById("menu-input-mssv").value =
+                currentStudent.id || "";
+              document.getElementById("menu-input-mssv").onclick = function (
+                e,
+              ) {
+                e.stopPropagation();
+              };
+            }
+          }
+        }
+      }
+
+      document.addEventListener("click", function () {
+        let menu = document.getElementById("menu-tha-tai-khoan");
+        if (menu) menu.classList.remove("hien-thi-user");
+      });
+
+      let menuKhung = document.getElementById("menu-tha-tai-khoan");
+      if (menuKhung) {
+        menuKhung.addEventListener("click", function (event) {
+          event.stopPropagation();
+        });
+      }
+
+      function hienThiGiaoDienTaiKhoan() {
+        let tenSVDong = currentStudent.name
+          ? currentStudent.name
+          : "Sinh viên ẩn danh";
+        let mssvSVDong = currentStudent.id ? currentStudent.id : "000000";
+        let savedImg = localStorage.getItem("user_avatar_base64_" + mssvSVDong);
+        let btnEl = document.getElementById("avatar-nut-bam");
+
+        if (btnEl) {
+          if (savedImg) {
+            btnEl.innerHTML = `<img src="${savedImg}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+          } else {
+            let chuCaiDau = tenSVDong.trim().charAt(0).toUpperCase();
+            btnEl.innerHTML = `<span id="avatar-chu-cai">${chuCaiDau}</span>`;
+          }
+        }
+      }
+
+      function luuThayDoiTaiKhoan() {
+        let newName = document.getElementById("menu-input-ten").value.trim();
+        let newId = document.getElementById("menu-input-mssv").value.trim();
+
+        if (newName === "" || newId === "") {
+          alert("Họ tên và MSSV không được để trống!");
+          return;
+        }
+
+        if (newId === "7277979906" && newName !== "trung_admin") {
+          alert(
+            "Cảnh báo: Thông tin xác thực Admin không hợp lệ! Bạn không có quyền chuyển đổi sang tài khoản này.",
+          );
+          return;
+        }
+
+        let oldId = currentStudent.id ? currentStudent.id.trim() : "000000";
+
+        if (newId !== oldId) {
+          let oldAvatar = localStorage.getItem("user_avatar_base64_" + oldId);
+          if (oldAvatar) {
+            localStorage.setItem("user_avatar_base64_" + newId, oldAvatar);
+            localStorage.removeItem("user_avatar_base64_" + oldId);
+          }
+        }
+
+        currentStudent.name = newName;
+        currentStudent.id = newId;
+        localStorage.setItem(
+          "current_logged_student",
+          JSON.stringify(currentStudent),
+        );
+
+        database.ref("threads").once("value", (snapshot) => {
+          let threadsData = snapshot.val();
+          if (threadsData) {
+            Object.keys(threadsData).forEach((key) => {
+              let post = threadsData[key];
+              if (
+                post.mssv &&
+                (post.mssv.trim() === oldId || post.mssv.trim() === newId)
+              ) {
+                database.ref(`threads/${key}/author`).set(newName);
+              }
+
+              if (post.comments) {
+                Object.keys(post.comments).forEach((cmtKey) => {
+                  let cmt = post.comments[cmtKey];
+                  if (
+                    cmt.mssv &&
+                    (cmt.mssv.trim() === oldId || cmt.mssv.trim() === newId)
+                  ) {
+                    database
+                      .ref(`threads/${key}/comments/${cmtKey}/user`)
+                      .set(newName);
+                  }
+                });
+              }
+            });
+          }
+        });
+
+        hienThiGiaoDienTaiKhoan();
+        let menu = document.getElementById("menu-tha-tai-khoan");
+        if (menu) menu.classList.remove("hien-thi-user");
+        alert(
+          "Cập nhật thông tin tài khoản và đồng bộ dữ liệu đám mây thành công! 🎉",
+        );
+      }
+
+      function capNhatAvatarTaiKhoan(input) {
+        let mssvSVDong = currentStudent.id ? currentStudent.id : "000000";
+        if (input.files && input.files[0]) {
+          let file = input.files[0];
+          if (file.size > 2 * 1024 * 1024) {
+            alert("File ảnh quá nặng! Vui lòng chọn ảnh dưới 2MB.");
+            return;
+          }
+          let reader = new FileReader();
+          reader.onload = function (e) {
+            localStorage.setItem(
+              "user_avatar_base64_" + mssvSVDong,
+              e.target.result,
+            );
+            hienThiGiaoDienTaiKhoan();
+            alert("Cập nhật ảnh đại diện thành công! 🎉");
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function dangXuatTaiKhoan() {
+        if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+          localStorage.removeItem("current_logged_student");
+          location.reload();
         }
       }
     </script>
