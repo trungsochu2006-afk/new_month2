@@ -1614,6 +1614,62 @@
     <script>
       const shopeeLink = "https://s.shopee.vn/8V3Q7Nm1he";
 
+      // Đẩy biến hàm ra window để tránh lỗi scope biến cục bộ
+      window.kichHoatReplyComment = function (postId, cmtKey, username) {
+        let inputEl = document.getElementById(`input-cmt-${postId}`);
+        let statusEl = document.getElementById(`reply-status-${postId}`);
+        if (inputEl && statusEl) {
+          inputEl.setAttribute("data-parent", cmtKey);
+          inputEl.value = `@${username} `;
+          statusEl.style.display = "block";
+          statusEl.innerHTML = `Đang trả lời bình luận của <b>${username}</b> <span onclick="huyReplyComment('${postId}')" style="color:#ff4d4d; cursor:pointer; margin-left:8px; font-weight:bold;">[Hủy]</span>`;
+          inputEl.focus();
+        }
+      };
+
+      window.huyReplyComment = function (postId) {
+        let inputEl = document.getElementById(`input-cmt-${postId}`);
+        let statusEl = document.getElementById(`reply-status-${postId}`);
+        if (inputEl && statusEl) {
+          inputEl.setAttribute("data-parent", "");
+          inputEl.value = "";
+          statusEl.style.display = "none";
+        }
+      };
+
+      function likeComment(postId, cmtKey) {
+        let currentUserId =
+          currentStudent && currentStudent.id
+            ? currentStudent.id.trim()
+            : "guest";
+        if (currentUserId === "guest") return;
+
+        let cmtRef = database.ref(`threads/${postId}/comments/${cmtKey}`);
+
+        // Dùng transaction để cập nhật siêu tốc
+        cmtRef.transaction((cmt) => {
+          if (cmt) {
+            if (!cmt.likedUsers) cmt.likedUsers = {};
+
+            let userKey = Object.keys(cmt.likedUsers).find(
+              (key) => cmt.likedUsers[key] === currentUserId,
+            );
+
+            if (userKey) {
+              // Bỏ thích comment
+              delete cmt.likedUsers[userKey];
+              cmt.likes = Math.max(0, (cmt.likes || 1) - 1);
+            } else {
+              // Thích comment
+              let newLikeCmtKey = "like_" + Date.now();
+              cmt.likedUsers[newLikeCmtKey] = currentUserId;
+              cmt.likes = (cmt.likes || 0) + 1;
+            }
+          }
+          return cmt;
+        });
+      }
+
       function showTab(tab) {
         document
           .querySelectorAll(".section")
@@ -1670,8 +1726,8 @@
       }
 
       /* =========================================
-         🌟 KHỞI TẠO BIẾN CHẠY VÀ CẤU HÌNH CLOUD FIREBASE TRƯỚC (QUAN TRỌNG)
-         ========================================= */
+               🌟 KHỞI TẠO BIẾN CHẠY VÀ CẤU HÌNH CLOUD FIREBASE TRƯỚC (QUAN TRỌNG)
+               ========================================= */
       let currentStudent = { name: "", id: "" };
 
       // ⚠️ ĐỒNG BỘ: Nhớ thay cấu hình Firebase chính chủ của bạn vào đây sau khi tạo project xong
@@ -1758,8 +1814,8 @@
       }
 
       /* =========================================
-         LOGIC XỬ LÝ PHÂN HỆ TRẮC NGHIỆM
-         ========================================= */
+               LOGIC XỬ LÝ PHÂN HỆ TRẮC NGHIỆM
+               ========================================= */
       let selectedSubject = "";
       let selectedChapter = "";
       let questionsPool = [];
@@ -1924,7 +1980,7 @@
           answer: "B",
         },
         {
-          q: "I ______ married next month.",
+          q: "Is it true that Anna is leaving? - Yes, she ______ married next month.",
           options: { A: "is getting", B: "gets", C: "got", D: "will" },
           answer: "A",
         },
@@ -1967,66 +2023,6 @@
             D: "We were not probably sending a letter to our old friend in the future.",
           },
           answer: "A",
-        },
-        {
-          q: "I/not/know/she/call/./ /call/her/back/now/.",
-          options: {
-            A: "I didn't know she has called. I call her back now.",
-            B: "I don't know she called. I will call her back now.",
-            C: "I don't know she had called. I call her back now.",
-            D: "I didn't know she had called. I will call her back now.",
-          },
-          answer: "D",
-        },
-        {
-          q: "The travel company booked everything for us on our family trip to Singapore.",
-          options: {
-            A: "The travel company provided me with a package holiday to Singapore.",
-            B: "Our family trip to Singapore was completely booked by the travel company.",
-            C: "The travel company reserved hotel rooms and flight tickets to Singapore for our family.",
-            D: "On our trip to Singapore, everything is booked by the travel company.",
-          },
-          answer: "B",
-        },
-        {
-          q: "They have had box office success despite being unusual films.",
-          options: {
-            A: "Although they have had box office success, they are unusual films.",
-            B: "They have had box office success although they are unusual films.",
-            C: "They are unusual films, in contrast, they have box office success.",
-            D: "They have had box office success in spite of unusual films.",
-          },
-          answer: "B",
-        },
-        {
-          q: "I consider myself to be hard-working and organized in my work.",
-          options: {
-            A: "I am considered to work hard and organize work with myself.",
-            B: "In my opinion, I am hard-working and well-organized at work.",
-            C: "People agree that I am hard-working and organized in my work.",
-            D: "It is said that I am hard-working and organized in my work.",
-          },
-          answer: "B",
-        },
-        {
-          q: "The ship and several others sank in 1671 when they hit rocks.",
-          options: {
-            A: "After they sank in 1671, the ship and several others hit rocks.",
-            B: "The ship and several others sank in 1671 until hitting rocks.",
-            C: "The ship and several others sank in 1671 after hitting rocks.",
-            D: "Not until they sank in 1671 did the ship and several others hit rocks.",
-          },
-          answer: "C",
-        },
-        {
-          q: "Elizabeth is meeting her new boss on Wednesday.",
-          options: {
-            A: "Elizabeth may have a meeting with her new boss on Wednesday.",
-            B: "Elizabeth has an appointment with her new boss on Wednesday.",
-            C: "As usual, Elizabeth sees her new boss on Wednesday.",
-            D: "Every Wednesday, Elizabeth hangs out with her boss.",
-          },
-          answer: "B",
         },
       ];
 
@@ -2334,38 +2330,7 @@
           🌟 MẠNG XÃ HỘI THREAD PHENIKAA CHẠY THỜI GIAN THỰC (REAL-TIME CLOUD)
           ========================================= */
 
-      // 🛠️ HÀM TỰ ĐỘNG NÉN ẢNH CHỐNG ĐƠ NÚT ĐĂNG BÀI KHI CHỌN FILE NẶNG
-      function nenAnhThread(base64Str, maxWidth, maxHeight, callback) {
-        let img = new Image();
-        img.src = base64Str;
-        img.onload = function () {
-          let canvas = document.createElement("canvas");
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxWidth) {
-              height *= maxWidth / width;
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width *= maxHeight / height;
-              height = maxHeight;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          let ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Nén chất lượng ảnh xuống 0.7 (Giảm 80% dung lượng file thừa)
-          let compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
-          callback(compressedBase64);
-        };
-      }
-
-      // Hàm đăng bài viết mới lên đám mây Firebase (ĐÃ TÍCH HỢP HÀM NÉN ĐỘC QUYỀN)
+      // Hàm đăng bài viết mới lên đám mây Firebase (Real-time Cloud)
       function createNewPost() {
         let content = document.getElementById("thread-content").value.trim();
         let fileInput = document.getElementById("thread-image");
@@ -2390,7 +2355,7 @@
           id: "post_" + Date.now(),
           author: authorName,
           mssv: authorId,
-          avatar: localStorage.getItem("user_avatar_base64_" + authorId) || "", // 🌟 Lưu avatar bài viết lên Cloud
+          avatar: localStorage.getItem("user_avatar_base64_" + authorId) || "",
           text: content,
           image: "",
           likes: 0,
@@ -2402,7 +2367,6 @@
         if (fileInput.files && fileInput.files[0]) {
           let reader = new FileReader();
           reader.onload = function (e) {
-            // Chạy qua bộ lọc nén ảnh trước khi tải lên Firebase
             nenAnhThread(
               e.target.result,
               800,
@@ -2465,7 +2429,6 @@
           posts.sort((a, b) => b.time - a.time);
 
           posts.forEach((post) => {
-            // 🌟 1. XỬ LÝ PHÂN CẤP VÀ DỰNG GIAO DIỆN BÌNH LUẬN (COMMENT LỒNG NHAU)
             let commentsHtml = "";
             if (post.comments) {
               commentsHtml = `<div class="comment-box" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">`;
@@ -2475,11 +2438,9 @@
                 ...post.comments[key],
               }));
 
-              // Tách bình luận gốc (không có parentId) và bình luận con (reply)
               let rootComments = rawComments.filter((c) => !c.parentId);
               let childComments = rawComments.filter((c) => c.parentId);
 
-              // Hàm dựng giao diện cho từng dòng comment đơn lẻ
               function renderSingleComment(cmt) {
                 let thoiGianCmt =
                   typeof cmt.timestamp === "number"
@@ -2528,7 +2489,6 @@
                 let cmtHeartIcon = hasLikedCmt ? "❤️" : "🤍";
                 let cmtLikesCount = cmt.likes || 0;
 
-                // Thụt lề trái 32px nếu là comment con (đang trả lời cmt khác)
                 let marginStyle = cmt.parentId
                   ? "margin-left: 32px; border-left: 2px solid #e2e8f0; padding-left: 10px;"
                   : "";
@@ -2552,7 +2512,6 @@
                   </div>`;
               }
 
-              // Sắp xếp phân tầng: Cmt gốc hiện trước, cmt con hít theo ngay sau cmt gốc đó
               rootComments.forEach((rootCmt) => {
                 commentsHtml += renderSingleComment(rootCmt);
                 let relatedChildren = childComments.filter(
@@ -2566,13 +2525,11 @@
               commentsHtml += `</div>`;
             }
 
-            // Kiểm tra hiển thị tích xanh cho bài viết chính
             let tichXanhHtml = "";
             if (post.mssv && post.mssv.trim() === adminId) {
               tichXanhHtml = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 15px; height: 15px; object-fit: contain; margin-left: 5px; vertical-align: middle;" />`;
             }
 
-            // Gắn class vương miện cho bài viết của admin
             let adminClass =
               post.mssv && post.mssv.trim() === adminId
                 ? "avatar-admin-vip"
@@ -2600,7 +2557,6 @@
               }
             }
 
-            // Phân quyền menu chỉnh sửa/xóa ba chấm bài viết
             let quyen_admin = "";
             if (currentUserId !== "") {
               if (currentUserId === adminId) {
@@ -2635,6 +2591,10 @@
             let imageHtml = post.image
               ? `<img src="${post.image}" class="thread-img"/>`
               : "";
+            let isLiked =
+              post.likedUsers &&
+              Object.values(post.likedUsers).includes(currentUserId);
+            let heartColor = isLiked ? "❤️" : "🤍";
 
             let cardHtml = `
               <div class="thread-card" id="card-${post.id}">
@@ -2675,57 +2635,6 @@
         });
       }
 
-      // 👑 TÁCH RIÊNG CÁC HÀM TƯƠNG TÁC RA NGOÀI ĐỂ KHÔNG LÀM KẸT ĐƯỜNG TRUYỀN FIREBASE CHÍNH
-      function kichHoatReplyComment(postId, cmtKey, username) {
-        let inputEl = document.getElementById(`input-cmt-${postId}`);
-        let statusEl = document.getElementById(`reply-status-${postId}`);
-        if (inputEl && statusEl) {
-          inputEl.setAttribute("data-parent", cmtKey);
-          inputEl.value = `@${username} `;
-          statusEl.style.display = "block";
-          statusEl.innerHTML = `Đang trả lời bình luận của <b>${username}</b> <span onclick="huyReplyComment('${postId}')" style="color:#ff4d4d; cursor:pointer; margin-left:8px; font-weight:bold;">[Hủy]</span>`;
-          inputEl.focus();
-        }
-      }
-
-      function huyReplyComment(postId) {
-        let inputEl = document.getElementById(`input-cmt-${postId}`);
-        let statusEl = document.getElementById(`reply-status-${postId}`);
-        if (inputEl && statusEl) {
-          inputEl.setAttribute("data-parent", "");
-          inputEl.value = "";
-          statusEl.style.display = "none";
-        }
-      }
-
-      function likeComment(postId, cmtKey) {
-        let currentUserId =
-          currentStudent && currentStudent.id
-            ? currentStudent.id.trim()
-            : "guest";
-        if (currentUserId === "guest") return;
-
-        let cmtRef = database.ref(`threads/${postId}/comments/${cmtKey}`);
-        cmtRef.once("value", (snapshot) => {
-          let cmt = snapshot.val();
-          if (cmt) {
-            if (!cmt.likedUsers) cmt.likedUsers = {};
-            let likedArray = Object.values(cmt.likedUsers);
-            let index = likedArray.indexOf(currentUserId);
-            if (index === -1) {
-              cmtRef.child("likedUsers").push(currentUserId);
-              cmtRef.child("likes").set((cmt.likes || 0) + 1);
-            } else {
-              let userKey = Object.keys(cmt.likedUsers).find(
-                (key) => cmt.likedUsers[key] === currentUserId,
-              );
-              if (userKey) cmtRef.child(`likedUsers/${userKey}`).remove();
-              cmtRef.child("likes").set(Math.max(0, (cmt.likes || 1) - 1));
-            }
-          }
-        });
-      }
-
       function likePost(postId) {
         let currentUserId =
           currentStudent && currentStudent.id
@@ -2734,24 +2643,29 @@
         if (currentUserId === "guest") return;
 
         let postRef = database.ref(`threads/${postId}`);
-        postRef.once("value", (snapshot) => {
-          let post = snapshot.val();
+
+        // Sử dụng transaction để cập nhật trực tiếp trên server, không cần load lại cả bài viết
+        postRef.transaction((post) => {
           if (post) {
             if (!post.likedUsers) post.likedUsers = {};
-            let likedArray = Object.values(post.likedUsers);
 
-            let index = likedArray.indexOf(currentUserId);
-            if (index === -1) {
-              postRef.child("likedUsers").push(currentUserId);
-              postRef.child("likes").set((post.likes || 0) + 1);
+            let likedValues = Object.values(post.likedUsers);
+            let userKey = Object.keys(post.likedUsers).find(
+              (key) => post.likedUsers[key] === currentUserId,
+            );
+
+            if (userKey) {
+              // Bỏ like
+              delete post.likedUsers[userKey];
+              post.likes = Math.max(0, (post.likes || 1) - 1);
             } else {
-              let userKey = Object.keys(post.likedUsers).find(
-                (key) => post.likedUsers[key] === currentUserId,
-              );
-              if (userKey) postRef.child(`likedUsers/${userKey}`).remove();
-              postRef.child("likes").set(Math.max(0, (post.likes || 1) - 1));
+              // Like
+              let newLikeKey = "like_" + Date.now();
+              post.likedUsers[newLikeKey] = currentUserId;
+              post.likes = (post.likes || 0) + 1;
             }
           }
+          return post;
         });
       }
 
@@ -2772,9 +2686,7 @@
           return;
         }
 
-        // Lấy id của bình luận cha xem có đang trả lời ai không
         let parentId = inputEl.getAttribute("data-parent") || "";
-
         let currentUser =
           currentStudent && currentStudent.name
             ? currentStudent.name
@@ -2790,7 +2702,7 @@
             localStorage.getItem("user_avatar_base64_" + currentUid) || "",
           text: cmtText,
           timestamp: Date.now(),
-          parentId: parentId, // Lưu parentId lên database để phân cấp thụt lề
+          parentId: parentId,
         };
 
         database
@@ -2798,9 +2710,10 @@
           .push(newComment)
           .then(() => {
             inputEl.value = "";
-            huyReplyComment(postId); // Gửi xong tự động xóa trạng thái reply
+            huyReplyComment(postId);
           });
       }
+
       function toggleThreadMenu(event, postId) {
         event.stopPropagation();
         document
@@ -2817,6 +2730,7 @@
           database.ref("threads/" + postId).remove();
         }
       }
+
       function deleteComment(postId, cmtKey) {
         if (
           confirm("Admin có chắc chắn muốn xóa bình luận độc hại này không?")
@@ -2825,7 +2739,6 @@
         }
       }
 
-      /* Các hàm phụ trợ khác giữ nguyên */
       function editPost(postId) {
         let textElement = document.getElementById(`text-${postId}`);
         if (!textElement) return;
@@ -2946,7 +2859,6 @@
         let oldId = currentStudent.id ? currentStudent.id.trim() : "000000";
         let mssvSVDong = newId;
 
-        // Lấy ảnh đại diện mới nhất vừa đổi (nếu có) để chuẩn bị đồng bộ lên mây
         let codeMoiAvatar =
           localStorage.getItem("user_avatar_base64_" + oldId) ||
           localStorage.getItem("user_avatar_base64_" + newId) ||
@@ -2966,7 +2878,6 @@
           JSON.stringify(currentStudent),
         );
 
-        // 🌟 TIẾN HÀNH ĐỒNG BỘ TOÀN DIỆN LÊN CLOUD FIREBASE (CẢ BÀI CŨ VÀ COMMENT CŨ)
         database.ref("threads").once("value", (snapshot) => {
           let threadsData = snapshot.val();
           if (threadsData) {
@@ -2974,22 +2885,17 @@
 
             Object.keys(threadsData).forEach((postKey) => {
               let post = threadsData[postKey];
-
-              // 1. Kiểm tra nếu là bài đăng của tài khoản này -> Cập nhật Tên mới & Avatar mới cho bài viết
               if (
                 post.mssv &&
                 (post.mssv.trim() === oldId || post.mssv.trim() === newId)
               ) {
                 updates[`threads/${postKey}/author`] = newName;
                 updates[`threads/${postKey}/avatar`] = codeMoiAvatar;
-                updates[`threads/${postKey}/mssv`] = newId; // Đồng bộ luôn nếu có đổi MSSV
+                updates[`threads/${postKey}/mssv`] = newId;
               }
-
-              // 2. Kiểm tra danh sách bình luận bên trong bài viết
               if (post.comments) {
                 Object.keys(post.comments).forEach((cmtKey) => {
                   let cmt = post.comments[cmtKey];
-                  // Nếu phát hiện bình luận của tài khoản này -> Ép cập nhật Tên và Avatar mới ngay lập tức
                   if (
                     cmt.mssv &&
                     (cmt.mssv.trim() === oldId || cmt.mssv.trim() === newId)
@@ -3005,16 +2911,7 @@
               }
             });
 
-            // Gửi lệnh cập nhật hàng loạt lên Firebase
-            database
-              .ref()
-              .update(updates)
-              .then(() => {
-                console.log("Đồng bộ đám mây hoàn tất!");
-              })
-              .catch((err) => {
-                console.error("Lỗi đồng bộ: ", err);
-              });
+            database.ref().update(updates);
           }
         });
 
@@ -3024,16 +2921,15 @@
 
         if (btnEl) {
           if (mssvSVDong === "7277979906") {
-            btnEl.classList.add("avatar-admin-vip"); // Gắn vương miện cho góc phải nếu là admin
+            btnEl.classList.add("avatar-admin-vip");
           } else {
             btnEl.classList.remove("avatar-admin-vip");
           }
         }
         if (menu) menu.classList.remove("hien-thi-user");
-        alert(
-          "Cập nhật thông tin tài khoản và ĐỒNG BỘ TOÀN BỘ bài đăng, avatar cũ thành công! 🎉",
-        );
+        alert("Cập nhật thông tin tài khoản thành công! 🎉");
       }
+
       function capNhatAvatarTaiKhoan(input) {
         let mssvSVDong = currentStudent.id ? currentStudent.id : "000000";
         if (input.files && input.files[0]) {
@@ -3062,8 +2958,7 @@
         }
       }
 
-      // 👑 SCRIPT CAROUSEL CUỘN TRÒN VÔ HẠN (1 -> 4 -> 1 MƯỢT MÀ KHÔNG GIẬT LÙI)
-      // 👑 BĂNG CHUYỀN CAROUSEL ĐIỀU KHIỂN THÔNG MINH - FIX TRIỆT ĐỂ LỖI XANH TRANG CHỦ
+      /* 👑 CAROUSEL BANNER TRANG CHỦ MƯỢT MÀ CHỐNG TREO MÀN XANH */
       (function () {
         const container = document.getElementById("carousel-container");
         const track = document.getElementById("carousel-track");
@@ -3085,11 +2980,9 @@
         let prevTranslate = 0;
         let autoPlayTimer = null;
 
-        // Hàm tính toán lại tọa độ chuẩn, nếu lỗi kích thước thì ép trượt về ảnh đầu tiên
         function resetSliderSize() {
           let containerWidth = container.offsetWidth;
           if (containerWidth === 0) {
-            // Nếu trình duyệt chưa render kịp, lấy tạm chiều rộng màn hình làm chuẩn chống trống khung
             containerWidth = window.innerWidth;
           }
           track.style.transition = "none";
@@ -3098,7 +2991,6 @@
           track.style.transform = `translateX(${currentTranslate}px)`;
         }
 
-        // Thiết lập vị trí ban đầu hiển thị đúng Ảnh 1
         resetSliderSize();
 
         function setSliderPosition() {
@@ -3138,7 +3030,6 @@
           setSliderPosition();
         }
 
-        // 🌟 TĂNG THỜI GIAN TRƯỢT LÊN 3.5 GIÂY ĐỂ TRÌNH DUYỆT KỊP LOAD ẢNH CHỐNG TREO MÀN XANH
         function startAutoPlay() {
           stopAutoPlay();
           autoPlayTimer = setInterval(() => {
@@ -3185,7 +3076,6 @@
 
         window.addEventListener("resize", resetSliderSize);
 
-        // 🌟 XỬ LÝ TRIỆT ĐỂ: Khi ẩn tab thì dừng trượt, khi quay lại web thì đợi render 100ms rồi mới tính toán lại kích thước
         document.addEventListener("visibilitychange", () => {
           if (!document.hidden) {
             setTimeout(() => {
