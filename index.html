@@ -1000,47 +1000,22 @@
     </header>
     <nav>
       <div class="nav-links">
-        <button onclick="showTab('home')">Môn học E-leaning</button>
+      <!--  <button onclick="showTab('home')">Môn học E-leaning</button> -->
         <button onclick="showTab('quiz')">Câu Hỏi Trắc Nhiệm</button>
-        <button onclick="showTab('shop')">File Tài Liệu Môn</button>
-        <button onclick="showTab('shop')">Mua Hàng Tại Shopee</button>
-        <button onclick="showTab('threads')">Thread phenikaa</button>
+      <!--  <button onclick="showTab('shop')">File Tài Liệu Môn</button> -->
+      <!--  <button onclick="showTab('shop')">Mua Hàng Tại Shopee</button> -->
+                <button onclick="showTab('threads')">Thread phenikaa</button>
       </div>
       <div style="display: flex; align-items: center; gap: 15px">
         <!-- 🌟 KHU VỰC ĐẾM NGƯỜI ONLINE ĐÃ ĐƯỢC TÀNG HÌNH Ô ĐỎ VÔ DUYÊN -->
-        <div
-          class="online-counter-box"
-          style="
-            background: transparent; /* Đã bỏ nền mờ để tàng hình */
-            color: #ffd700;
-            font-size: 14px;
-            font-weight: bold;
-            padding: 5px 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: none; /* Đã bỏ viền thô */
-          "
-        >
+        <!-- 🌟 KHU VỰC ĐẾM NGƯỜI ONLINE CHUẨN ĐÉT KHÔNG LỖI CÚ PHÁP -->
+        <div class="online-counter-box" style="background: transparent; color: #ffd700; font-size: 14px; font-weight: bold; padding: 5px 10px; display: flex; align-items: center; gap: 8px; border: none;">
           <span class="online-dot" style="width: 8px; height: 8px; background-color: #28a745; border-radius: 50%; display: inline-block;"></span>
-          <span
-            style="
-              color: #ffd700;
-              display: flex;
-              align-items: center;
-              gap: 6px;
-            "
-          >
+          <span style="color: #ffd700; display: flex; align-items: center; gap: 6px;">
             Người Đang Học:
             <script id="_waugsm">
               var _wau = _wau || [];
-              _wau.push([
-                "dynamic",
-                "uo67fow0y6",
-                "gsm",
-                "132c63ffd700", /* 🌟 THẦN CHÚ: 132c63 (nền xanh tiệp màu nav) + ffd700 (chữ vàng gold) */
-                "small",
-              ]);
+              _wau.push(["dynamic", "uo67fow0y6", "gsm", "132c63ffd700", "small"]);
             </script>
             <script async src="https://waust.at/d.js"></script>
           </span>
@@ -1145,13 +1120,13 @@
       </div>
     </nav>
 
-    <div id="home" class="section active">
-      <div class="search-box">
+<!--  <div id="home" class="section active">
+    <div class="search-box">
         <input id="newsSearch" placeholder="Tìm kiếm tin tức..." />
         <button onclick="searchNews()">Search</button>
-      </div>
-      <div class="grid">
-        <div class="card news" data-video="./tainan12thag2.mp4">
+    </div>
+    <div class="grid">
+    <div class="card news" data-video="./tainan12thag2.mp4">
           <video
             src="./tainan12thag2.mp4"
             autoplay
@@ -1161,19 +1136,19 @@
           ></video>
           <h3>Video Tai nạn thảm khốc</h3>
           <p>Bấm để xem video toàn cảnh full màn hình.</p>
-        </div>
-        <div class="card news" data-video="./thattinh.mp4">
+    </div>
+    <div class="card news" data-video="./thattinh.mp4">
           <video src="./thattinh.mp4" autoplay muted loop playsinline></video>
           <h3>Cô gái thất tình ở khu công nghiệp.</h3>
           <p>Bấm để xem video toàn cảnh full man hình.</p>
-        </div>
-        <div class="card news" data-video="./phaono.mp4">
+    </div>
+    <div class="card news" data-video="./phaono.mp4">
           <video src="./phaono.mp4" autoplay muted loop playsinline></video>
           <h3>Khung cảnh tan hoang Sau tiếng nổ lớn tại hưng yên</h3>
           <p>Bấm để xem video toàn cảnh full màn hình.</p>
-        </div>
-      </div>
     </div>
+      </div>
+  </div> -->
 
     <div id="shop" class="section">
       <div class="grid">
@@ -1591,6 +1566,12 @@
         firebase.initializeApp(firebaseConfig);
       }
       const database = firebase.database();
+      // 🌟 BỘ LỌC KIỂM DUYỆT TỰ ĐỘNG CHỐNG ĐĂNG ẢNH ĐỒ ĐỒY, TỪ NGỮ ĐỘC HẠI
+      const TU_CAM_BLACKLIST = ["dâm", "vú", "địt", "sex", "pussy", "nude", "bướm", "cu", "cac", "lon"];
+      function kiemDuyetNoiDung(text) {
+        let textLower = text.toLowerCase();
+        return TU_CAM_BLACKLIST.some(tu => textLower.includes(tu));
+      }
 
       // Sự kiện kích hoạt tải DOM và chạy đồng bộ
       document.addEventListener("DOMContentLoaded", function () {
@@ -2252,7 +2233,10 @@
       function createNewPost() {
         let content = document.getElementById("thread-content").value.trim();
         let fileInput = document.getElementById("thread-image");
-
+        if (kiemDuyetNoiDung(content)) {
+          alert("⚠️ Phát hiện từ ngữ hoặc nội dung nhạy cảm! Bài viết của bạn đã bị hệ thống tự động từ chối kiểm duyệt.");
+          return;
+        }
         if (!content) {
           alert("Bạn chưa nhập nội dung bài viết kìa!");
           return;
@@ -2264,11 +2248,11 @@
             : "Sinh viên ẩn danh";
         let authorId =
           currentStudent && currentStudent.id ? currentStudent.id : "000000";
-
         let newPost = {
           id: "post_" + Date.now(),
           author: authorName,
           mssv: authorId,
+          avatar: localStorage.getItem("user_avatar_base64_" + authorId) || "", // 🌟 THÊM DÒNG NÀY: Lưu avatar bài viết lên Cloud
           text: content,
           image: "",
           likes: 0,
@@ -2321,7 +2305,7 @@
       }
 
       // Hàm lắng nghe Firebase và vẽ giao diện đồng bộ tức thì (Real-time)
-      function renderThreads() {
+ function renderThreads() {
         let container = document.getElementById("threads-list");
         if (!container) return;
 
@@ -2351,56 +2335,77 @@
               ? `<img src="${post.image}" class="thread-img"/>`
               : "";
 
-            // Render danh sách comment từ dữ liệu đám mây
+            // 🌟 1. RENDER DANH SÁCH BÌNH LUẬN (CÓ TÍCH HỢP REPLY VÀ NÚT XÓA ADMIN)
             let commentsHtml = "";
             if (post.comments) {
               commentsHtml = `<div class="comment-box">`;
-              let rawComments = Object.values(post.comments);
-              rawComments.forEach((cmt) => {
+              
+              // Lấy cả Key và Value của danh sách comment từ Firebase
+              let rawCommentsKeys = Object.keys(post.comments);
+              rawCommentsKeys.forEach((cmtKey) => {
+                let cmt = post.comments[cmtKey];
                 let cmtTichXanh = "";
                 let cmtAvatarHtml = "";
+                let nutXoaCmtAdmin = "";
 
-                if (
-                  cmt.user === "trung_admin" ||
-                  (cmt.mssv && cmt.mssv.trim() === adminId)
-                ) {
+                // Kiểm tra hiển thị tích xanh cho admin trong comment
+                if (cmt.user === "trung_admin" || (cmt.mssv && cmt.mssv.trim() === adminId)) {
                   cmtTichXanh = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 13px; height: 15px; object-fit: contain; margin-left: 4px; vertical-align: middle;" />`;
                 }
 
-                let cmtUid = cmt.mssv ? cmt.mssv.trim() : "";
-                let savedCmtAvatar = localStorage.getItem(
-                  "user_avatar_base64_" + cmtUid,
-                );
-
-                if (savedCmtAvatar) {
-                  cmtAvatarHtml = `<img src="${savedCmtAvatar}" style="width:24px; height:24px; object-fit:cover; border-radius:50%; margin-right:5px; vertical-align: middle; display:inline-block;" />`;
+                // 🌟 ĐỒNG NHẤT AVATAR TRONG COMMENT: Ưu tiên lấy từ Cloud Firebase gửi lên
+                if (cmt.avatar) {
+                  cmtAvatarHtml = `<img src="${cmt.avatar}" style="width:24px; height:24px; object-fit:cover; border-radius:50%; margin-right:5px; vertical-align: middle; display:inline-block;" />`;
                 } else {
-                  let chuCaiCmt = cmt.user
-                    ? cmt.user.charAt(0).toUpperCase()
-                    : "U";
-                  cmtAvatarHtml = `<div style="width:24px; height:24px; background:#132c63; color:white; font-size:11px; font-weight:bold; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-right:5px; vertical-align: middle;">${chuCaiCmt}</div>`;
+                  // Nếu comment cũ chưa có avatar trên Cloud, tìm dưới localStorage máy
+                  let cmtUid = cmt.mssv ? cmt.mssv.trim() : "";
+                  let savedCmtAvatar = localStorage.getItem("user_avatar_base64_" + cmtUid);
+                  if (savedCmtAvatar) {
+                    cmtAvatarHtml = `<img src="${savedCmtAvatar}" style="width:24px; height:24px; object-fit:cover; border-radius:50%; margin-right:5px; vertical-align: middle; display:inline-block;" />`;
+                  } else {
+                    let chuCaiCmt = cmt.user ? cmt.user.charAt(0).toUpperCase() : "U";
+                    cmtAvatarHtml = `<div style="width:24px; height:24px; background:#132c63; color:white; font-size:11px; font-weight:bold; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-right:5px; vertical-align: middle;">${chuCaiCmt}</div>`;
+                  }
                 }
 
-                commentsHtml += `<div class="comment-item" style="display: flex; align-items: center; gap: 4px; padding: 8px 0; border-bottom: 1px dashed #eee; text-align:left;">${cmtAvatarHtml}<span><b>${cmt.user}${cmtTichXanh}:</b> ${cmt.text}</span></div>`;
+                // 🌟 PHÂN QUYỀN: Nếu là trung_admin thì vẽ thêm nút xóa comment bên phải
+                if (currentUserId === adminId) {
+                  nutXoaCmtAdmin = `<span onclick="deleteComment('${post.id}', '${cmtKey}')" style="color:#ff4d4d; font-size:11px; cursor:pointer; margin-left:10px; font-weight:bold; user-select:none;">[Xóa]</span>`;
+                }
+
+                // Vẽ cấu trúc comment, thêm sự kiện click vào tên/nội dung để Reply nhanh công khai
+                commentsHtml += `
+                  <div class="comment-item" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; text-align:left;">
+                    <div style="display:flex; align-items:center; gap:4px; flex:1;">
+                      ${cmtAvatarHtml}
+                      <span style="cursor:pointer;" onclick="replyComment('${post.id}', '${cmt.user}')" title="Bấm để trả lời bình luận này">
+                        <b>${cmt.user}${cmtTichXanh}:</b> ${cmt.text}
+                      </span>
+                    </div>
+                    ${nutXoaCmtAdmin}
+                  </div>`;
               });
               commentsHtml += `</div>`;
             }
 
+            // Kiểm tra hiển thị tích xanh cho bài viết chính
             let tichXanhHtml = "";
             if (post.mssv && post.mssv.trim() === adminId) {
               tichXanhHtml = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 15px; height: 15px; object-fit: contain; margin-left: 5px; vertical-align: middle;" />`;
             }
 
+            // 🌟 ĐỒNG NHẤT AVATAR BÀI ĐĂNG CHÍNH: Ưu tiên lấy từ Cloud Firebase
             let postAvatarHtml = `<div class="thread-avatar">${post.author.charAt(0).toUpperCase()}</div>`;
-            if (post.mssv) {
-              let savedPostAvatar = localStorage.getItem(
-                "user_avatar_base64_" + post.mssv.trim(),
-              );
+            if (post.avatar) {
+              postAvatarHtml = `<div class="thread-avatar" style="overflow:hidden;"><img src="${post.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
+            } else if (post.mssv) {
+              let savedPostAvatar = localStorage.getItem("user_avatar_base64_" + post.mssv.trim());
               if (savedPostAvatar) {
                 postAvatarHtml = `<div class="thread-avatar" style="overflow:hidden;"><img src="${savedPostAvatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
               }
             }
 
+            // Cấu hình menu ba chấm sửa/xóa cho bài đăng chính
             let menuHtml = "";
             if (currentUserId !== "") {
               if (currentUserId === adminId) {
@@ -2494,6 +2499,10 @@
         if (!inputEl) return;
         let cmtText = inputEl.value.trim();
         if (!cmtText) return;
+        if (kiemDuyetNoiDung(cmtText)) {
+          alert("⚠️ Bình luận chứa từ ngữ không phù hợp quy chuẩn học đường Phenikaa!");
+          return;
+        }
 
         let currentUser =
           currentStudent && currentStudent.name
@@ -2503,8 +2512,10 @@
           currentStudent && currentStudent.id ? currentStudent.id.trim() : "";
 
         let newComment = {
+          id: "cmt_" + Date.now(),
           user: currentUser,
           mssv: currentUid,
+          avatar: localStorage.getItem("user_avatar_base64_" + currentUid) || "", // 🌟 THÊM DÒNG NÀY: Lưu avatar comment lên Cloud
           text: cmtText,
           timestamp: Date.now(),
         };
@@ -2531,6 +2542,11 @@
       function deletePost(postId) {
         if (confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
           database.ref("threads/" + postId).remove();
+        }
+      }
+      function deleteComment(postId, cmtKey) {
+        if (confirm("Admin có chắc chắn muốn xóa bình luận độc hại này không?")) {
+          database.ref(`threads/${postId}/comments/${cmtKey}`).remove();
         }
       }
 
@@ -2731,6 +2747,13 @@
         if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
           localStorage.removeItem("current_logged_student");
           location.reload();
+        }
+      }
+      function replyComment(postId, username) {
+        let inputEl = document.getElementById(`input-cmt-${postId}`);
+        if (inputEl) {
+          inputEl.value = `@${username} ` + inputEl.value;
+          inputEl.focus();
         }
       }
     </script>
