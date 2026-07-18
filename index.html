@@ -6,12 +6,7 @@
     <title>Xoăn Trung Automation</title>
 
     <style>
-      body {
-        margin: 0;
-        font-family: "Segoe UI", sans-serif;
-        background: #eef1f7;
-      }
-
+ 
       /* 🌟 GIAO DIỆN ĐĂNG NHẬP GIỐNG MS OFFICE PHENIKAA CHUẨN TỈ LỆ */
       #welcome-screen {
         position: fixed;
@@ -1005,6 +1000,23 @@
         z-index: 999999999 !important;
         clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 0% 85%);
       }
+      /* 1. Đảm bảo container ảnh chiếm hết chiều rộng và không bị tràn */
+.banner-box { overflow: hidden; width: 100%; }
+.track { display: flex; width: 100%; transition: transform 0.5s ease-in-out; }
+.track img { width: 100%; height: auto; object-fit: cover; flex-shrink: 0; pointer-events: none; }
+
+/* 2. Logic ẩn/hiện dựa trên màn hình */
+@media (min-width: 769px) {
+  /* Máy tính: Hiện PC, Ẩn Mobile */
+  #carousel-container-mobile { display: none !important; }
+  #carousel-container-pc { display: block !important; }
+}
+
+@media (max-width: 768px) {
+  /* Điện thoại: Ẩn PC, Hiện Mobile */
+  #carousel-container-pc { display: none !important; }
+  #carousel-container-mobile { display: block !important; }
+}
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -1200,80 +1212,25 @@
       class="section active"
       style="width: 100%; margin: 0; padding: 0; clear: both; user-select: none"
     >
-      <div
-        id="carousel-container"
-        style="
-          width: 100%;
-          height: auto;
-          max-height: 75vh;
-          position: relative;
-          overflow: hidden;
-          cursor: grab;
-          background: #132c63;
-          line-height: 0;
-        "
-      >
-        <!-- VÙNG CHỨA CÁC ẢNH ĐỂ CHẠY VÒNG LẶP -->
-        <div
-          id="carousel-track"
-          style="
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.5s ease-in-out;
-          "
-        >
-          <img
-            src="./phenikaa_uni.jpg"
-            alt="Slide 1"
-            style="
-              width: 100%;
-              height: auto;
-              max-height: 75vh;
-              object-fit: cover;
-              flex-shrink: 0;
-              pointer-events: none;
-            "
-          />
-          <img
-            src="./phenikaa_uni1.jpg"
-            alt="Slide 2"
-            style="
-              width: 100%;
-              height: auto;
-              max-height: 75vh;
-              object-fit: cover;
-              flex-shrink: 0;
-              pointer-events: none;
-            "
-          />
-          <img
-            src="./phenikaa_uni2.jpg"
-            alt="Slide 3"
-            style="
-              width: 100%;
-              height: auto;
-              max-height: 75vh;
-              object-fit: cover;
-              flex-shrink: 0;
-              pointer-events: none;
-            "
-          />
-          <img
-            src="./phenikaa_uni3.jpg"
-            alt="Slide 4"
-            style="
-              width: 100%;
-              height: auto;
-              max-height: 75vh;
-              object-fit: cover;
-              flex-shrink: 0;
-              pointer-events: none;
-            "
-          />
-        </div>
-      </div>
-    </div>
+<!-- Dành cho máy tính -->
+<div id="carousel-container-pc" class="banner-box">
+  <div id="carousel-track-pc" class="track">
+    <img src="./phenikaa_uni.jpg" alt="Slide 1" />
+    <img src="./phenikaa_uni1.jpg" alt="Slide 2" />
+    <img src="./phenikaa_uni2.jpg" alt="Slide 3" />
+    <img src="./phenikaa_uni3.jpg" alt="Slide 4" />
+  </div>
+</div>
+
+<!-- Dành cho điện thoại -->
+<div id="carousel-container-mobile" class="banner-box">
+  <div id="carousel-track-mobile" class="track">
+    <img src="./baner1.jpg" alt="Slide 1" />
+    <img src="./baner2.jpg" alt="Slide 2" />
+    <img src="./baner3.jpg" alt="Slide 3" />
+    <img src="./baner4.jpg" alt="Slide 4" />
+  </div>
+</div>
 
     <div id="shop" class="section">
       <div class="grid">
@@ -1612,6 +1569,11 @@
     </div>
 
     <script>
+      // Đặt ngay trên cùng của thẻ script này
+      const ADMIN_INFO = {
+        name: "trung_admin",
+        id: "7277979906",
+      };
       const shopeeLink = "https://s.shopee.vn/8V3Q7Nm1he";
       window.kichHoatReplyComment = function (postId, cmtKey, username) {
         let inputEl = document.getElementById(`input-cmt-${postId}`);
@@ -2407,31 +2369,36 @@
         let img = new Image();
         img.src = base64Str;
         img.onload = function () {
-          console.log("Ảnh đã load vào canvas thành công");
           let canvas = document.createElement("canvas");
           let width = img.width;
           let height = img.height;
-          // ... (giữ nguyên logic nén của anh)
-          if (width > height) {
-            if (width > maxWidth) {
-              height *= maxWidth / width;
+
+          // Chỉ thay đổi kích thước nếu ảnh vượt quá giới hạn, nhưng vẫn giữ tỷ lệ
+          if (width > maxWidth || height > maxHeight) {
+            if (width / height > maxWidth / maxHeight) {
+              height = Math.round(height * (maxWidth / width));
               width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width *= maxHeight / height;
+            } else {
+              width = Math.round(width * (maxHeight / height));
               height = maxHeight;
             }
           }
+
           canvas.width = width;
           canvas.height = height;
+
+          // Sử dụng kỹ thuật làm sắc nét (tùy chọn)
           let ctx = canvas.getContext("2d");
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high"; // Tối ưu chất lượng
           ctx.drawImage(img, 0, 0, width, height);
-          callback(canvas.toDataURL("image/jpeg", 0.7));
+
+          // Tăng chất lượng xuất file từ 0.7 lên 0.92
+          callback(canvas.toDataURL("image/jpeg", 0.92));
         };
         img.onerror = function () {
-          console.error("Ảnh không load được vào Image object!");
-          alert("Ảnh bị lỗi không xử lý được!");
+          console.error("Ảnh bị lỗi không xử lý được!");
+          alert("Ảnh bị lỗi!");
         };
       }
       function resetKhungNhapThread() {
@@ -2493,33 +2460,28 @@
                 let cmtAvatarHtml = "";
                 let nutXoaCmtAdmin = "";
 
-                // Tích xanh admin
+                // SỬA Ở ĐÂY: Dùng && để bắt buộc khớp cả Tên VÀ MSSV
+                // Lưu ý: Đảm bảo biến ADMIN_INFO đã được khai báo ở đầu thẻ <script>
                 if (
-                  cmt.user === "trung_admin" ||
-                  (cmt.mssv && cmt.mssv.trim() === adminId)
+                  cmt.user === ADMIN_INFO.name &&
+                  cmt.mssv &&
+                  cmt.mssv.trim() === ADMIN_INFO.id
                 ) {
                   cmtTichXanh = `
                     <img
                       src="./tich_xanh.jpg"
                       alt="Tích xanh"
-                      style="
-                        width:13px;
-                        height:15px;
-                        object-fit:contain;
-                        margin-left:4px;
-                        vertical-align:middle;
-                      "
-                    />
-                  `;
+                      style="width:13px; height:15px; object-fit:contain; margin-left:4px; vertical-align:middle;"
+                    />`;
                 }
 
-                // Class avatar admin
+                // Tương tự, sửa luôn đoạn class admin để khớp cả 2 điều kiện
                 let cmtAdminClass =
-                  cmt.user === "trung_admin" ||
-                  (cmt.mssv && cmt.mssv.trim() === adminId)
+                  cmt.user === ADMIN_INFO.name &&
+                  cmt.mssv &&
+                  cmt.mssv.trim() === ADMIN_INFO.id
                     ? "avatar-admin-vip"
                     : "";
-
                 // Avatar
                 if (cmt.avatar) {
                   cmtAvatarHtml = `
@@ -3065,16 +3027,48 @@
           return;
         }
 
+        // Admin bypass (giữ nguyên)
         if (newId === "7277979906" && newName !== "trung_admin") {
-          alert(
-            "Cảnh báo: Thông tin xác thực Admin không hợp lệ! Bạn không có quyền chuyển đổi sang tài khoản này.",
-          );
+          alert("Thông tin xác thực Admin không hợp lệ!");
           return;
         }
 
-        let oldId = currentStudent.id ? currentStudent.id.trim() : "000000";
-        let mssvSVDong = newId;
+        // 🌟 MỚI: Kiểm tra trùng MSSV trong toàn bộ hệ thống bài viết
+        database.ref("threads").once("value", (snapshot) => {
+          let threadsData = snapshot.val();
+          let isDuplicated = false;
 
+          if (threadsData) {
+            Object.keys(threadsData).forEach((postKey) => {
+              let post = threadsData[postKey];
+              // Nếu MSSV đã tồn tại ở một bài viết khác (không phải của chính mình) -> Báo trùng
+              if (
+                post.mssv &&
+                post.mssv.trim() === newId &&
+                newId !== currentStudent.id.trim()
+              ) {
+                isDuplicated = true;
+              }
+            });
+          }
+
+          if (isDuplicated) {
+            alert(
+              "⚠️ Tài khoản này (MSSV: " +
+                newId +
+                ") đã tồn tại trong hệ thống. Vui lòng cập nhật MSSV khác!",
+            );
+            return;
+          } else {
+            // Nếu không trùng, tiến hành lưu như cũ
+            thucHienLuuThayDoi(newName, newId);
+          }
+        });
+      }
+
+      // Tách logic lưu ra một hàm riêng để code sạch hơn
+      function thucHienLuuThayDoi(newName, newId) {
+        let oldId = currentStudent.id ? currentStudent.id.trim() : "000000";
         let codeMoiAvatar =
           localStorage.getItem("user_avatar_base64_" + oldId) ||
           localStorage.getItem("user_avatar_base64_" + newId) ||
@@ -3094,11 +3088,11 @@
           JSON.stringify(currentStudent),
         );
 
+        // Cập nhật tên và avatar trong tất cả bài cũ
         database.ref("threads").once("value", (snapshot) => {
           let threadsData = snapshot.val();
           if (threadsData) {
             let updates = {};
-
             Object.keys(threadsData).forEach((postKey) => {
               let post = threadsData[postKey];
               if (
@@ -3111,10 +3105,10 @@
               }
               if (post.comments) {
                 Object.keys(post.comments).forEach((cmtKey) => {
-                  let cmt = post.comments[cmtKey];
                   if (
-                    cmt.mssv &&
-                    (cmt.mssv.trim() === oldId || cmt.mssv.trim() === newId)
+                    post.comments[cmtKey].mssv &&
+                    (post.comments[cmtKey].mssv.trim() === oldId ||
+                      post.comments[cmtKey].mssv.trim() === newId)
                   ) {
                     updates[`threads/${postKey}/comments/${cmtKey}/user`] =
                       newName;
@@ -3126,26 +3120,15 @@
                 });
               }
             });
-
             database.ref().update(updates);
           }
         });
 
         hienThiGiaoDienTaiKhoan();
         let menu = document.getElementById("menu-tha-tai-khoan");
-        let btnEl = document.getElementById("avatar-nut-bam");
-
-        if (btnEl) {
-          if (mssvSVDong === "7277979906") {
-            btnEl.classList.add("avatar-admin-vip");
-          } else {
-            btnEl.classList.remove("avatar-admin-vip");
-          }
-        }
         if (menu) menu.classList.remove("hien-thi-user");
-        alert("Cập nhật thông tin tài khoản thành công! 🎉");
+        alert("Cập nhật thông tin thành công! 🎉");
       }
-
       function capNhatAvatarTaiKhoan(input) {
         let mssv = currentStudent.id;
         if (!mssv) return alert("Vui lòng đăng nhập!");
@@ -3200,10 +3183,17 @@
       }
 
       /* 👑 CAROUSEL BANNER TRANG CHỦ MƯỢT MÀ CHỐNG TREO MÀN XANH */
-      (function () {
-        const container = document.getElementById("carousel-container");
-        const track = document.getElementById("carousel-track");
-        if (!container || !track) return;
+(function () {
+  // Logic chọn "sân khấu" dựa trên độ rộng màn hình
+  let isMobile = window.innerWidth <= 768;
+  const container = isMobile 
+                    ? document.getElementById("carousel-container-mobile") 
+                    : document.getElementById("carousel-container-pc");
+  const track = isMobile 
+                ? document.getElementById("carousel-track-mobile") 
+                : document.getElementById("carousel-track-pc");
+  
+  if (!container || !track) return;
 
         const originalSlides = Array.from(track.children);
         const firstClone = originalSlides[0].cloneNode(true);
