@@ -1613,8 +1613,6 @@
 
     <script>
       const shopeeLink = "https://s.shopee.vn/8V3Q7Nm1he";
-
-      // Đẩy biến hàm ra window để tránh lỗi scope biến cục bộ
       window.kichHoatReplyComment = function (postId, cmtKey, username) {
         let inputEl = document.getElementById(`input-cmt-${postId}`);
         let statusEl = document.getElementById(`reply-status-${postId}`);
@@ -1726,8 +1724,8 @@
       }
 
       /* =========================================
-               🌟 KHỞI TẠO BIẾN CHẠY VÀ CẤU HÌNH CLOUD FIREBASE TRƯỚC (QUAN TRỌNG)
-               ========================================= */
+                               🌟 KHỞI TẠO BIẾN CHẠY VÀ CẤU HÌNH CLOUD FIREBASE TRƯỚC (QUAN TRỌNG)
+                               ========================================= */
       let currentStudent = { name: "", id: "" };
 
       // ⚠️ ĐỒNG BỘ: Nhớ thay cấu hình Firebase chính chủ của bạn vào đây sau khi tạo project xong
@@ -1814,8 +1812,8 @@
       }
 
       /* =========================================
-               LOGIC XỬ LÝ PHÂN HỆ TRẮC NGHIỆM
-               ========================================= */
+                               LOGIC XỬ LÝ PHÂN HỆ TRẮC NGHIỆM
+                               ========================================= */
       let selectedSubject = "";
       let selectedChapter = "";
       let questionsPool = [];
@@ -2327,32 +2325,24 @@
       }
 
       /* =========================================
-          🌟 MẠNG XÃ HỘI THREAD PHENIKAA CHẠY THỜI GIAN THỰC (REAL-TIME CLOUD)
-          ========================================= */
+                          🌟 MẠNG XÃ HỘI THREAD PHENIKAA CHẠY THỜI GIAN THỰC (REAL-TIME CLOUD)
+                          ========================================= */
 
-      // Hàm đăng bài viết mới lên đám mây Firebase (Real-time Cloud)
-      function createNewPost() {
+      async function createNewPost() {
         let content = document.getElementById("thread-content").value.trim();
         let fileInput = document.getElementById("thread-image");
+
         if (kiemDuyetNoiDung(content)) {
-          alert(
-            "⚠️ Phát hiện từ ngữ hoặc nội dung nhạy cảm! Bài viết của bạn đã bị hệ thống tự động từ chối kiểm duyệt.",
-          );
-          return;
-        }
-        if (!content) {
-          alert("Bạn chưa nhập nội dung bài viết kìa!");
+          alert("⚠️ Phát hiện từ ngữ nhạy cảm!");
           return;
         }
 
-        let authorName =
-          currentStudent && currentStudent.name
-            ? currentStudent.name
-            : "Sinh viên ẩn danh";
-        let authorId =
-          currentStudent && currentStudent.id ? currentStudent.id : "000000";
+        let postId = "post_" + Date.now();
+        let authorName = currentStudent.name || "Sinh viên ẩn danh";
+        let authorId = currentStudent.id || "000000";
+
         let newPost = {
-          id: "post_" + Date.now(),
+          id: postId,
           author: authorName,
           mssv: authorId,
           avatar: localStorage.getItem("user_avatar_base64_" + authorId) || "",
@@ -2365,40 +2355,85 @@
         };
 
         if (fileInput.files && fileInput.files[0]) {
+          console.log("Bước 1: Bắt đầu đọc file ảnh...");
           let reader = new FileReader();
+
           reader.onload = function (e) {
+            console.log("Bước 2: Đọc file thành công, bắt đầu nén...");
             nenAnhThread(
               e.target.result,
               800,
               600,
               function (compressedResult) {
+                console.log("Bước 3: Nén xong, chuẩn bị đẩy lên Firebase...");
                 newPost.image = compressedResult;
+
                 database
-                  .ref("threads/" + newPost.id)
+                  .ref("threads/" + postId)
                   .set(newPost)
                   .then(() => {
+                    console.log("Bước 4: Đăng bài thành công!");
+                    alert("Đăng bài thành công!");
                     resetKhungNhapThread();
                   })
                   .catch((error) => {
-                    alert("Lỗi đăng bài: " + error.message);
+                    console.error("Lỗi Firebase:", error);
+                    alert("Lỗi Firebase: " + error.message);
                   });
               },
             );
           };
+
+          reader.onerror = function () {
+            console.error("Lỗi FileReader");
+            alert("Lỗi đọc file ảnh!");
+          };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
+          console.log("Đăng bài không có ảnh...");
           database
-            .ref("threads/" + newPost.id)
+            .ref("threads/" + postId)
             .set(newPost)
             .then(() => {
+              alert("Đăng bài thành công!");
               resetKhungNhapThread();
             })
-            .catch((error) => {
-              alert("Lỗi đăng bài: " + error.message);
-            });
+            .catch((error) => alert("Lỗi đăng bài: " + error.message));
         }
       }
 
+      // CẬP NHẬT HÀM NÉN ẢNH (THÊM BẮT LỖI)
+      function nenAnhThread(base64Str, maxWidth, maxHeight, callback) {
+        let img = new Image();
+        img.src = base64Str;
+        img.onload = function () {
+          console.log("Ảnh đã load vào canvas thành công");
+          let canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          // ... (giữ nguyên logic nén của anh)
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          let ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL("image/jpeg", 0.7));
+        };
+        img.onerror = function () {
+          console.error("Ảnh không load được vào Image object!");
+          alert("Ảnh bị lỗi không xử lý được!");
+        };
+      }
       function resetKhungNhapThread() {
         document.getElementById("thread-content").value = "";
         document.getElementById("thread-image").value = "";
@@ -2413,6 +2448,7 @@
 
         let currentUserId =
           currentStudent && currentStudent.id ? currentStudent.id.trim() : "";
+
         const adminId = "7277979906";
 
         database.ref("threads").on("value", (snapshot) => {
@@ -2426,12 +2462,17 @@
           }
 
           let posts = Object.values(threadsData);
+
           posts.sort((a, b) => b.time - a.time);
 
           posts.forEach((post) => {
             let commentsHtml = "";
+
             if (post.comments) {
-              commentsHtml = `<div class="comment-box" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">`;
+              commentsHtml = `
+                <div class="comment-box"
+                     style="margin-top:10px; padding:10px; background:#f8f9fa; border-radius:8px;">
+              `;
 
               let rawComments = Object.keys(post.comments).map((key) => ({
                 key: key,
@@ -2439,6 +2480,7 @@
               }));
 
               let rootComments = rawComments.filter((c) => !c.parentId);
+
               let childComments = rawComments.filter((c) => c.parentId);
 
               function renderSingleComment(cmt) {
@@ -2446,72 +2488,248 @@
                   typeof cmt.timestamp === "number"
                     ? tinhThoiGianTroiQua(cmt.timestamp)
                     : "Vừa xong";
+
                 let cmtTichXanh = "";
                 let cmtAvatarHtml = "";
                 let nutXoaCmtAdmin = "";
 
+                // Tích xanh admin
                 if (
                   cmt.user === "trung_admin" ||
                   (cmt.mssv && cmt.mssv.trim() === adminId)
                 ) {
-                  cmtTichXanh = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 13px; height: 15px; object-fit: contain; margin-left: 4px; vertical-align: middle;" />`;
+                  cmtTichXanh = `
+                    <img
+                      src="./tich_xanh.jpg"
+                      alt="Tích xanh"
+                      style="
+                        width:13px;
+                        height:15px;
+                        object-fit:contain;
+                        margin-left:4px;
+                        vertical-align:middle;
+                      "
+                    />
+                  `;
                 }
 
+                // Class avatar admin
                 let cmtAdminClass =
                   cmt.user === "trung_admin" ||
                   (cmt.mssv && cmt.mssv.trim() === adminId)
                     ? "avatar-admin-vip"
                     : "";
+
+                // Avatar
                 if (cmt.avatar) {
-                  cmtAvatarHtml = `<div class="${cmtAdminClass}" style="position: relative; width: 24px; height: 24px; display: inline-block; margin-right: 5px; vertical-align: middle;"><img src="${cmt.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
+                  cmtAvatarHtml = `
+                    <div
+                      class="${cmtAdminClass}"
+                      style="
+                        position:relative;
+                        width:24px;
+                        height:24px;
+                        display:inline-block;
+                        margin-right:5px;
+                        vertical-align:middle;
+                      "
+                    >
+                      <img
+                        src="${cmt.avatar}"
+                        style="
+                          width:100%;
+                          height:100%;
+                          object-fit:cover;
+                          border-radius:50%;
+                        "
+                      />
+                    </div>
+                  `;
                 } else {
                   let cmtUid = cmt.mssv ? cmt.mssv.trim() : "";
+
                   let savedCmtAvatar = localStorage.getItem(
                     "user_avatar_base64_" + cmtUid,
                   );
+
                   if (savedCmtAvatar) {
-                    cmtAvatarHtml = `<div class="${cmtAdminClass}" style="position: relative; width: 24px; height: 24px; display: inline-block; margin-right: 5px; vertical-align: middle;"><img src="${savedCmtAvatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
+                    cmtAvatarHtml = `
+                      <div
+                        class="${cmtAdminClass}"
+                        style="
+                          position:relative;
+                          width:24px;
+                          height:24px;
+                          display:inline-block;
+                          margin-right:5px;
+                          vertical-align:middle;
+                        "
+                      >
+                        <img
+                          src="${savedCmtAvatar}"
+                          style="
+                            width:100%;
+                            height:100%;
+                            object-fit:cover;
+                            border-radius:50%;
+                          "
+                        />
+                      </div>
+                    `;
                   } else {
                     let chuCaiCmt = cmt.user
                       ? cmt.user.charAt(0).toUpperCase()
                       : "U";
-                    cmtAvatarHtml = `<div class="${cmtAdminClass}" style="position: relative; width: 24px; height: 24px; display: inline-block; margin-right: 5px; vertical-align: middle;"><div style="width:24px; height:24px; background:#132c63; color:white; font-size:11px; font-weight:bold; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">${chuCaiCmt}</div></div>`;
+
+                    cmtAvatarHtml = `
+                      <div
+                        class="${cmtAdminClass}"
+                        style="
+                          position:relative;
+                          width:24px;
+                          height:24px;
+                          display:inline-block;
+                          margin-right:5px;
+                          vertical-align:middle;
+                        "
+                      >
+                        <div
+                          style="
+                            width:24px;
+                            height:24px;
+                            background:#132c63;
+                            color:white;
+                            font-size:11px;
+                            font-weight:bold;
+                            border-radius:50%;
+                            display:inline-flex;
+                            align-items:center;
+                            justify-content:center;
+                          "
+                        >
+                          ${chuCaiCmt}
+                        </div>
+                      </div>
+                    `;
                   }
                 }
 
+                // Nút xóa dành cho admin
                 if (currentUserId === adminId) {
-                  nutXoaCmtAdmin = `<span onclick="deleteComment('${post.id}', '${cmt.key}')" style="color:#ff4d4d; font-size:11px; cursor:pointer; margin-left:10px; font-weight:bold; user-select:none;">[Xóa]</span>`;
+                  nutXoaCmtAdmin = `
+                    <span
+                      onclick="deleteComment('${post.id}', '${cmt.key}')"
+                      style="
+                        color:#ff4d4d;
+                        font-size:11px;
+                        cursor:pointer;
+                        margin-left:10px;
+                        font-weight:bold;
+                        user-select:none;
+                      "
+                    >
+                      [Xóa]
+                    </span>
+                  `;
                 }
 
+                // Like comment
                 let hasLikedCmt =
                   cmt.likedUsers &&
                   Object.values(cmt.likedUsers).includes(currentUserId);
+
                 let cmtHeartIcon = hasLikedCmt ? "❤️" : "🤍";
+
                 let cmtLikesCount = cmt.likes || 0;
 
+                // Comment trả lời
                 let marginStyle = cmt.parentId
-                  ? "margin-left: 32px; border-left: 2px solid #e2e8f0; padding-left: 10px;"
+                  ? "margin-left:32px; border-left:2px solid #e2e8f0; padding-left:10px;"
                   : "";
 
                 return `
-                  <div class="comment-item" style="padding: 8px 0; text-align:left; ${marginStyle}">
-                    <div style="display:flex; align-items: flex-start; gap:6px;">
+                  <div
+                    class="comment-item"
+                    style="
+                      padding:8px 0;
+                      text-align:left;
+                      ${marginStyle}
+                    "
+                  >
+                    <div
+                      style="
+                        display:flex;
+                        align-items:flex-start;
+                        gap:6px;
+                      "
+                    >
                       ${cmtAvatarHtml}
+
                       <div style="flex:1;">
-                        <div style="background: #ffffff; padding: 6px 12px; border-radius: 14px; display: inline-block; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                          <b>${cmt.user}${cmtTichXanh}:</b> <span style="color:#222;">${cmt.text}</span>
+                        <div
+                          style="
+                            background:#ffffff;
+                            padding:6px 12px;
+                            border-radius:14px;
+                            display:inline-block;
+                            box-shadow:0 1px 3px rgba(0,0,0,0.05);
+                          "
+                        >
+                          <b>
+                            ${cmt.user}
+                            ${cmtTichXanh}:
+                          </b>
+
+                          <span style="color:#222;">
+                            ${cmt.text}
+                          </span>
                         </div>
-                        <div style="font-size: 12px; color: #777; margin-top: 4px; margin-left: 8px; display: flex; align-items: center; gap: 15px; user-select: none;">
-                          <span>${thoiGianCmt}</span>
-                          <span onclick="likeComment('${post.id}', '${cmt.key}')" style="cursor:pointer; font-weight:600;">${cmtHeartIcon} ${cmtLikesCount > 0 ? cmtLikesCount : "Thích"}</span>
-                          <span onclick="kichHoatReplyComment('${post.id}', '${cmt.key}', '${cmt.user}')" style="cursor:pointer; font-weight:600; color: #254196;">Trả lời</span>
+
+                        <div
+                          style="
+                            font-size:12px;
+                            color:#777;
+                            margin-top:4px;
+                            margin-left:8px;
+                            display:flex;
+                            align-items:center;
+                            gap:15px;
+                            user-select:none;
+                          "
+                        >
+                          <span>
+                            ${thoiGianCmt}
+                          </span>
+
+                          <span
+                            onclick="likeComment('${post.id}', '${cmt.key}')"
+                            style="
+                              cursor:pointer;
+                              font-weight:600;
+                            "
+                          >
+                            ${cmtHeartIcon}
+                            ${cmtLikesCount > 0 ? cmtLikesCount : "Thích"}
+                          </span>
+
+                          <span
+                            onclick="kichHoatReplyComment('${post.id}', '${cmt.key}', '${cmt.user}')"
+                            style="
+                              cursor:pointer;
+                              font-weight:600;
+                              color:#254196;
+                            "
+                          >
+                            Trả lời
+                          </span>
+
                           ${nutXoaCmtAdmin}
                         </div>
                       </div>
                     </div>
-                  </div>`;
+                  </div>
+                `;
               }
-
               rootComments.forEach((rootCmt) => {
                 commentsHtml += renderSingleComment(rootCmt);
                 let relatedChildren = childComments.filter(
@@ -2534,27 +2752,35 @@
               post.mssv && post.mssv.trim() === adminId
                 ? "avatar-admin-vip"
                 : "";
-            let postAvatarHtml = `<div class="thread-avatar ${adminClass}">${post.author.charAt(0).toUpperCase()}</div>`;
+            let postAvatarHtml;
 
-            if (post.avatar) {
+            // 1. Ưu tiên lấy ảnh từ Firebase (đã đồng bộ)
+            if (post.avatar && post.avatar.startsWith("data:image")) {
               postAvatarHtml = `
-                <div class="${adminClass}" style="position: relative; width: 38px; height: 38px;">
-                  <div class="thread-avatar" style="overflow: hidden; width: 100%; height: 100%; border-radius: 50%;">
-                    <img src="${post.avatar}" style="width:100%; height:100%; object-fit:cover;" />
-                  </div>
-                </div>`;
-            } else if (post.mssv) {
+                                <div class="${adminClass}" style="position: relative; width: 38px; height: 38px;">
+                                    <img src="${post.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+                                </div>`;
+            }
+            // 2. Nếu chưa có, kiểm tra tiếp trong localStorage
+            else if (post.mssv) {
               let savedPostAvatar = localStorage.getItem(
                 "user_avatar_base64_" + post.mssv.trim(),
               );
               if (savedPostAvatar) {
                 postAvatarHtml = `
-                  <div class="${adminClass}" style="position: relative; width: 38px; height: 38px;">
-                    <div class="thread-avatar" style="overflow: hidden; width: 100%; height: 100%; border-radius: 50%;">
-                      <img src="${savedPostAvatar}" style="width:100%; height:100%; object-fit:cover;" />
-                    </div>
-                  </div>`;
+                                    <div class="${adminClass}" style="position: relative; width: 38px; height: 38px;">
+                                        <div class="thread-avatar" style="overflow: hidden; width: 100%; height: 100%; border-radius: 50%;">
+                                            <img src="${savedPostAvatar}" style="width:100%; height:100%; object-fit:cover;" />
+                                        </div>
+                                    </div>`;
+              } else {
+                // 3. Cuối cùng mới hiển thị chữ cái đầu
+                postAvatarHtml = `<div class="thread-avatar ${adminClass}">${post.author.charAt(0).toUpperCase()}</div>`;
               }
+            }
+            // 4. Nếu không có cả mssv
+            else {
+              postAvatarHtml = `<div class="thread-avatar ${adminClass}">${post.author.charAt(0).toUpperCase()}</div>`;
             }
 
             let quyen_admin = "";
@@ -2565,22 +2791,22 @@
                   nutSuaCuaAdmin = `<div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>`;
                 }
                 quyen_admin = `
-                  <div class="khung-menu-bai-viet">
-                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
-                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
-                      ${nutSuaCuaAdmin}
-                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài (Admin)</div>
-                    </div>
-                  </div>`;
+                                  <div class="khung-menu-bai-viet">
+                                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
+                                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
+                                      ${nutSuaCuaAdmin}
+                                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài (Admin)</div>
+                                    </div>
+                                  </div>`;
               } else if (post.mssv && post.mssv.trim() === currentUserId) {
                 quyen_admin = `
-                  <div class="khung-menu-bai-viet">
-                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
-                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
-                      <div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>
-                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài</div>
-                    </div>
-                  </div>`;
+                                  <div class="khung-menu-bai-viet">
+                                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
+                                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
+                                      <div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>
+                                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài</div>
+                                    </div>
+                                  </div>`;
               }
             }
 
@@ -2597,44 +2823,34 @@
             let heartColor = isLiked ? "❤️" : "🤍";
 
             let cardHtml = `
-              <div class="thread-card" id="card-${post.id}">
-                <div class="thread-user-box">
-                  ${postAvatarHtml}
-                  <div>
-                    <div class="thread-username" style="display: flex; align-items: center; font-weight: bold;">${post.author} ${tichXanhHtml}</div>
-                  </div>
-                  <div class="thread-time">${thoiGianHienThi}</div>
-                  ${quyen_admin}
-                </div>
-                <p class="thread-text" id="text-${post.id}">${post.text}</p>
-                ${imageHtml}
-                <div class="thread-actions">
-                  <div class="action-btn" onclick="likePost('${post.id}')">${heartColor} <span>${post.likes || 0}</span></div>
-                  <div class="action-btn" onclick="focusCommentInput('${post.id}')">💬 <span>${post.comments ? Object.keys(post.comments).length : 0}</span></div>
-                </div>
-                ${commentsHtml}
-                <div style="display:flex; flex-direction: column; gap:4px; margin-top:10px; padding-top:5px;">
-                  <div id="reply-status-${post.id}" style="font-size: 12px; color: #254196; display: none; text-align: left; padding-left: 6px;">
-                    Đang trả lời bình luận... <span onclick="huyReplyComment('${post.id}')" style="color:#ff4d4d; cursor:pointer; margin-left:5px;">[Hủy]</span>
-                  </div>
-                  <div style="display:flex; gap:8px;">
-                    <input type="text" 
-                           id="input-cmt-${post.id}" 
-                           data-parent="" 
-                           placeholder="Viết bình luận công khai (Ấn Enter để gửi)..." 
-                           onkeydown="if(event.key === 'Enter') { event.preventDefault(); submitComment('${post.id}'); }"
-                           style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:16px; font-size:13px; outline:none"/>
-                    <button type="button" 
-                            onclick="submitComment('${post.id}')" 
-                            style="background:#254196; color:white; border:none; padding:6px 12px; border-radius:16px; font-size:13px; cursor:pointer; font-weight:bold;">Gửi</button>
-                  </div>
-                </div>
-              </div>`;
+                          <div class="thread-card" id="card-${post.id}">
+                            <div class="thread-user-box">
+                              ${postAvatarHtml}
+                              <div>
+                                <div class="thread-username" style="display: flex; align-items: center; font-weight: bold;">${post.author}${tichXanhHtml}</div>
+                              </div>
+                              <div class="thread-time">${thoiGianHienThi}</div>${quyen_admin}
+                            </div>
+                            <p class="thread-text" id="text-${post.id}">${post.text}</p>${imageHtml}
+                            <div class="thread-actions">
+                              <div class="action-btn" onclick="likePost('${post.id}')">${heartColor} <span>${post.likes || 0}</span></div>
+                              <div class="action-btn" onclick="focusCommentInput('${post.id}')">💬 <span>${post.comments ? Object.keys(post.comments).length : 0}</span></div>
+                            </div>
+                            ${commentsHtml}
+                            <div style="display:flex; flex-direction: column; gap:4px; margin-top:10px; padding-top:5px;">
+                              <div id="reply-status-${post.id}" style="font-size: 12px; color: #254196; display: none; text-align: left; padding-left: 6px;">
+                                Đang trả lời bình luận... <span onclick="huyReplyComment('${post.id}')" style="color:#ff4d4d; cursor:pointer; margin-left:5px;">[Hủy]</span>
+                              </div>
+                              <div style="display:flex; gap:8px;">
+                                <input type="text" id="input-cmt-${post.id}" data-parent="" placeholder="Viết bình luận..." onkeydown="if(event.key === 'Enter') { event.preventDefault(); submitComment('${post.id}'); }" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:16px; font-size:13px; outline:none"/>
+                                <button type="button" onclick="submitComment('${post.id}')" style="background:#254196; color:white; border:none; padding:6px 12px; border-radius:16px; font-size:13px; cursor:pointer; font-weight:bold;">Gửi</button>
+                              </div>
+                            </div>
+                          </div>`;
             container.innerHTML += cardHtml;
           });
         });
       }
-
       function likePost(postId) {
         let currentUserId =
           currentStudent && currentStudent.id
@@ -2744,13 +2960,13 @@
         if (!textElement) return;
         let currentText = textElement.innerText;
         textElement.innerHTML = `
-          <div style="margin-top: 10px;">
-            <textarea id="edit-input-${postId}" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #005da3; border-radius: 6px; outline: none; resize: none; font-family: inherit; font-size: 14px; box-sizing: border-box;">${currentText}</textarea>
-            <div style="text-align: right; margin-top: 5px;">
-              <button onclick="cancelEdit('${postId}', \`${currentText}\`)" style="background: #6c757d; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; margin-right: 5px;">Hủy</button>
-              <button onclick="saveEditPost('${postId}')" style="background: #28a745; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: bold;">Lưu lại</button>
-            </div>
-          </div>`;
+                          <div style="margin-top: 10px;">
+                            <textarea id="edit-input-${postId}" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #005da3; border-radius: 6px; outline: none; resize: none; font-family: inherit; font-size: 14px; box-sizing: border-box;">${currentText}</textarea>
+                            <div style="text-align: right; margin-top: 5px;">
+                              <button onclick="cancelEdit('${postId}', \`${currentText}\`)" style="background: #6c757d; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; margin-right: 5px;">Hủy</button>
+                              <button onclick="saveEditPost('${postId}')" style="background: #28a745; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: bold;">Lưu lại</button>
+                            </div>
+                          </div>`;
       }
 
       function cancelEdit(postId, originalText) {
@@ -2931,24 +3147,49 @@
       }
 
       function capNhatAvatarTaiKhoan(input) {
-        let mssvSVDong = currentStudent.id ? currentStudent.id : "000000";
+        let mssv = currentStudent.id;
+        if (!mssv) return alert("Vui lòng đăng nhập!");
+
         if (input.files && input.files[0]) {
-          let file = input.files[0];
-          if (file.size > 2 * 1024 * 1024) {
-            alert("File ảnh quá nặng! Vui lòng chọn ảnh dưới 2MB.");
-            return;
-          }
           let reader = new FileReader();
           reader.onload = function (e) {
-            localStorage.setItem(
-              "user_avatar_base64_" + mssvSVDong,
-              e.target.result,
-            );
+            let base64Img = e.target.result;
+            // 1. Lưu vào Firebase để đồng bộ mọi máy
+            database.ref("users/" + mssv + "/avatar").set(base64Img);
+            // 2. Vẫn lưu local để dùng nhanh
+            localStorage.setItem("user_avatar_base64_" + mssv, base64Img);
+
+            // 3. CẬP NHẬT LẠI TẤT CẢ BÀI ĐĂNG CŨ CỦA MÌNH
+            capNhatAnhTatCaBaiDangCu(mssv, base64Img);
+
             hienThiGiaoDienTaiKhoan();
-            alert("Cập nhật ảnh đại diện thành công! 🎉");
+            alert("Đã đồng bộ avatar lên hệ thống!");
           };
-          reader.readAsDataURL(file);
+          reader.readAsDataURL(input.files[0]);
         }
+      }
+
+      // Hàm này đi quét và update tất cả bài đăng/comment cũ của người dùng
+      function capNhatAnhTatCaBaiDangCu(mssv, newAvatar) {
+        database.ref("threads").once("value", (snapshot) => {
+          let updates = {};
+          snapshot.forEach((child) => {
+            let post = child.val();
+            if (post.mssv === mssv) {
+              updates["threads/" + post.id + "/avatar"] = newAvatar;
+            }
+            // Quét cả comment
+            if (post.comments) {
+              Object.keys(post.comments).forEach((cmtKey) => {
+                if (post.comments[cmtKey].mssv === mssv) {
+                  updates[`threads/${post.id}/comments/${cmtKey}/avatar`] =
+                    newAvatar;
+                }
+              });
+            }
+          });
+          database.ref().update(updates);
+        });
       }
 
       function dangXuatTaiKhoan() {
@@ -2980,11 +3221,15 @@
         let prevTranslate = 0;
         let autoPlayTimer = null;
 
+        // Hàm tính toán lại tọa độ chuẩn, nếu lỗi kích thước thì ép trượt về ảnh đầu tiên
         function resetSliderSize() {
-          let containerWidth = container.offsetWidth;
-          if (containerWidth === 0) {
-            containerWidth = window.innerWidth;
+          // BỔ SUNG: Kiểm tra xem container có đang hiển thị không (nếu width=0 thì bỏ qua không reset)
+          if (container.offsetWidth === 0) {
+            // Đợi một chút rồi thử lại hoặc không làm gì để tránh làm hỏng trạng thái hiện tại
+            return;
           }
+
+          let containerWidth = container.offsetWidth;
           track.style.transition = "none";
           currentTranslate = currentIndex * -containerWidth;
           prevTranslate = currentTranslate;
