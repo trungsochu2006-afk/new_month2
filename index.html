@@ -6,7 +6,6 @@
     <title>Xoăn Trung Automation</title>
 
     <style>
- 
       /* 🌟 GIAO DIỆN ĐĂNG NHẬP GIỐNG MS OFFICE PHENIKAA CHUẨN TỈ LỆ */
       #welcome-screen {
         position: fixed;
@@ -1001,22 +1000,51 @@
         clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 0% 85%);
       }
       /* 1. Đảm bảo container ảnh chiếm hết chiều rộng và không bị tràn */
-.banner-box { overflow: hidden; width: 100%; }
-.track { display: flex; width: 100%; transition: transform 0.5s ease-in-out; }
-.track img { width: 100%; height: auto; object-fit: cover; flex-shrink: 0; pointer-events: none; }
+      .banner-box {
+        overflow: hidden;
+        width: 100%;
+      }
+      .track {
+        display: flex;
+        width: 100%;
+        transition: transform 0.5s ease-in-out;
+      }
+      .track img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        flex-shrink: 0;
+        pointer-events: none;
+      }
 
-/* 2. Logic ẩn/hiện dựa trên màn hình */
-@media (min-width: 769px) {
-  /* Máy tính: Hiện PC, Ẩn Mobile */
-  #carousel-container-mobile { display: none !important; }
-  #carousel-container-pc { display: block !important; }
-}
+      /* 2. Logic ẩn/hiện dựa trên màn hình */
+      @media (min-width: 769px) {
+        /* Máy tính: Hiện PC, Ẩn Mobile */
+        #carousel-container-mobile {
+          display: none !important;
+        }
+        #carousel-container-pc {
+          display: block !important;
+        }
+      }
 
-@media (max-width: 768px) {
-  /* Điện thoại: Ẩn PC, Hiện Mobile */
-  #carousel-container-pc { display: none !important; }
-  #carousel-container-mobile { display: block !important; }
-}
+      @media (max-width: 768px) {
+        /* Điện thoại: Ẩn PC, Hiện Mobile */
+        #carousel-container-pc {
+          display: none !important;
+        }
+        #carousel-container-mobile {
+          display: block !important;
+        }
+      }
+      #home {
+        /* Đảm bảo div home luôn hiển thị đủ không gian */
+        display: block;
+      }
+      /* Banner chỉ hiển thị khi div home là active */
+      #home:not(.active) .banner-box {
+        display: none !important;
+      }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -1070,7 +1098,7 @@
         <button onclick="showTab('threads')">Thread phenikaa</button>
       </div>
       <div style="display: flex; align-items: center; gap: 15px">
-        <!-- 🌟 KHU VỰC ĐẾM NGƯỜI ONLINE CHUẨN ĐÉT SẠCH CÚ PHÁP -->
+        <!-- Bọc trong try-catch để nếu script lỗi, web vẫn chạy bình thường -->
         <div
           class="online-counter-box"
           style="
@@ -1096,10 +1124,17 @@
             "
           ></span>
           <span
+            id="online-counter-display"
             style="color: #ffd700; display: flex; align-items: center; gap: 6px"
           >
-            Người Đang Học:
-            <script id="_waugsm">
+            Người Đang Học: <span id="wau_count">Đang tải...</span>
+          </span>
+        </div>
+
+        <script>
+          // Script đếm người an toàn: Không làm treo web
+          (function () {
+            try {
               var _wau = _wau || [];
               _wau.push([
                 "dynamic",
@@ -1108,10 +1143,22 @@
                 "132c63ffd700",
                 "small",
               ]);
-            </script>
-            <script async src="https://waust.at/d.js"></script>
-          </span>
-        </div>
+
+              var script = document.createElement("script");
+              script.async = true;
+              script.src = "https://waust.at/d.js";
+              script.onerror = function () {
+                document.getElementById("wau_count").innerText = "Đã ẩn";
+                console.log(
+                  "Trình duyệt chặn đếm người, nhưng web vẫn chạy tốt!",
+                );
+              };
+              document.head.appendChild(script);
+            } catch (e) {
+              console.log("Không thể khởi tạo bộ đếm.");
+            }
+          })();
+        </script>
 
         <div class="khung-tai-khoan">
           <div
@@ -1205,32 +1252,42 @@
         </div>
       </div>
     </nav>
-    <!-- 🌟 KHU VỰC BANNER TRANG CHỦ MỚI CHO ĐỠ TRỐNG -->
-    <!-- 🌟 BANNER HỆ THỐNG CAROUSEL TỰ TRƯỢT + KÉO RÊ CHUỘT MƯỢT MÀ -->
+    <!-- Dán code banner vào đây, bên trong div id="home" -->
     <div
       id="home"
       class="section active"
       style="width: 100%; margin: 0; padding: 0; clear: both; user-select: none"
     >
-<!-- Dành cho máy tính -->
-<div id="carousel-container-pc" class="banner-box">
-  <div id="carousel-track-pc" class="track">
-    <img src="./phenikaa_uni.jpg" alt="Slide 1" />
-    <img src="./phenikaa_uni1.jpg" alt="Slide 2" />
-    <img src="./phenikaa_uni2.jpg" alt="Slide 3" />
-    <img src="./phenikaa_uni3.jpg" alt="Slide 4" />
-  </div>
-</div>
+      <!-- Dành cho máy tính -->
+      <div id="carousel-container-pc" class="banner-box">
+        <div id="carousel-track-pc" class="track">
+          <img src="./phenikaa_uni.jpg" alt="Slide 1" />
+          <img src="./phenikaa_uni1.jpg" alt="Slide 2" />
+          <img src="./phenikaa_uni2.jpg" alt="Slide 3" />
+          <img src="./phenikaa_uni3.jpg" alt="Slide 4" />
+        </div>
+      </div>
 
-<!-- Dành cho điện thoại -->
-<div id="carousel-container-mobile" class="banner-box">
-  <div id="carousel-track-mobile" class="track">
-    <img src="./baner1.jpg" alt="Slide 1" />
-    <img src="./baner2.jpg" alt="Slide 2" />
-    <img src="./baner3.jpg" alt="Slide 3" />
-    <img src="./baner4.jpg" alt="Slide 4" />
-  </div>
-</div>
+      <!-- Dành cho điện thoại -->
+      <div id="carousel-container-mobile" class="banner-box">
+        <div id="carousel-track-mobile" class="track">
+          <img src="./baner1.jpg" alt="Slide 1" />
+          <img src="./baner2.jpg" alt="Slide 2" />
+          <img src="./baner3.jpg" alt="Slide 3" />
+          <img src="./baner4.jpg" alt="Slide 4" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Dành cho điện thoại -->
+    <div id="carousel-container-mobile" class="banner-box">
+      <div id="carousel-track-mobile" class="track">
+        <img src="./baner1.jpg" alt="Slide 1" />
+        <img src="./baner2.jpg" alt="Slide 2" />
+        <img src="./baner3.jpg" alt="Slide 3" />
+        <img src="./baner4.jpg" alt="Slide 4" />
+      </div>
+    </div>
 
     <div id="shop" class="section">
       <div class="grid">
@@ -1567,14 +1624,16 @@
         <button class="tick-btn" onclick="goShopee()">X</button>
       </div>
     </div>
-
     <script>
-      // Đặt ngay trên cùng của thẻ script này
+      // =========================================
+      // 👑 1. KHAI BÁO BIẾN CỐ ĐỊNH & ADMIN INFO
+      // =========================================
       const ADMIN_INFO = {
         name: "trung_admin",
         id: "7277979906",
       };
       const shopeeLink = "https://s.shopee.vn/8V3Q7Nm1he";
+
       window.kichHoatReplyComment = function (postId, cmtKey, username) {
         let inputEl = document.getElementById(`input-cmt-${postId}`);
         let statusEl = document.getElementById(`reply-status-${postId}`);
@@ -1605,22 +1664,16 @@
         if (currentUserId === "guest") return;
 
         let cmtRef = database.ref(`threads/${postId}/comments/${cmtKey}`);
-
-        // Dùng transaction để cập nhật siêu tốc
         cmtRef.transaction((cmt) => {
           if (cmt) {
             if (!cmt.likedUsers) cmt.likedUsers = {};
-
             let userKey = Object.keys(cmt.likedUsers).find(
               (key) => cmt.likedUsers[key] === currentUserId,
             );
-
             if (userKey) {
-              // Bỏ thích comment
               delete cmt.likedUsers[userKey];
               cmt.likes = Math.max(0, (cmt.likes || 1) - 1);
             } else {
-              // Thích comment
               let newLikeCmtKey = "like_" + Date.now();
               cmt.likedUsers[newLikeCmtKey] = currentUserId;
               cmt.likes = (cmt.likes || 0) + 1;
@@ -1631,12 +1684,29 @@
       }
 
       function showTab(tab) {
+        // 1. Logic ẩn hiện nội dung tab (giữ nguyên của anh)
         document
           .querySelectorAll(".section")
           .forEach((s) => s.classList.remove("active"));
-        document.getElementById(tab).classList.add("active");
-      }
+        let target = document.getElementById(tab);
+        if (target) target.classList.add("active");
 
+        // 2. LOGIC TỰ ĐỘNG ẨN BANNER KHI CHUYỂN TAB
+        const bannerPC = document.getElementById("carousel-container-pc");
+        const bannerMobile = document.getElementById(
+          "carousel-container-mobile",
+        );
+
+        if (tab === "home") {
+          // Nếu là trang chủ thì hiện lại banner
+          if (bannerPC) bannerPC.style.display = "block";
+          if (bannerMobile) bannerMobile.style.display = "block";
+        } else {
+          // Nếu là tab khác (Quiz, Thread, Shop) thì ẩn banner đi
+          if (bannerPC) bannerPC.style.display = "none";
+          if (bannerMobile) bannerMobile.style.display = "none";
+        }
+      }
       function searchNews() {
         let keyword = document.getElementById("newsSearch").value.toLowerCase();
         document.querySelectorAll(".news").forEach((card) => {
@@ -1685,12 +1755,11 @@
         showTab("home");
       }
 
-      /* =========================================
-                               🌟 KHỞI TẠO BIẾN CHẠY VÀ CẤU HÌNH CLOUD FIREBASE TRƯỚC (QUAN TRỌNG)
-                               ========================================= */
+      // =========================================
+      // 🌐 2. CẤU HÌNH CLOUD FIREBASE & KIỂM DUYỆT
+      // =========================================
       let currentStudent = { name: "", id: "" };
 
-      // ⚠️ ĐỒNG BỘ: Nhớ thay cấu hình Firebase chính chủ của bạn vào đây sau khi tạo project xong
       const firebaseConfig = {
         apiKey: "AIzaSyB-4sdYIrm5CtrloB1BHKhwzidJuuqdssg",
         authDomain: "threads-phenikaa.firebaseapp.com",
@@ -1707,7 +1776,7 @@
         firebase.initializeApp(firebaseConfig);
       }
       const database = firebase.database();
-      // 🌟 BỘ LỌC KIỂM DUYỆT TỰ ĐỘNG CHỐNG ĐĂNG ẢNH ĐỒ ĐỒY, TỪ NGỮ ĐỘC HẠI
+
       const TU_CAM_BLACKLIST = [
         "dâm",
         "vú",
@@ -1725,7 +1794,7 @@
         return TU_CAM_BLACKLIST.some((tu) => textLower.includes(tu));
       }
 
-      // Sự kiện kích hoạt tải DOM và chạy đồng bộ
+      // Sự kiện DOMContentLoaded chuẩn hóa
       document.addEventListener("DOMContentLoaded", function () {
         let savedStudent = localStorage.getItem("current_logged_student");
         if (savedStudent) {
@@ -1773,9 +1842,9 @@
         renderThreads();
       }
 
-      /* =========================================
-                               LOGIC XỬ LÝ PHÂN HỆ TRẮC NGHIỆM
-                               ========================================= */
+      // =========================================
+      // 📝 3. LOGIC HỆ THỐNG TRẮC NGHIỆM (QUIZ)
+      // =========================================
       let selectedSubject = "";
       let selectedChapter = "";
       let questionsPool = [];
@@ -1831,7 +1900,7 @@
         },
         {
           q: "The eyes are often a person's most interesting facial ______.",
-          options: { A: "signal", B: "figure", B: "feature", D: "character" },
+          options: { A: "signal", B: "figure", C: "feature", D: "character" },
           answer: "C",
         },
         {
@@ -1919,7 +1988,7 @@
           options: {
             A: "had the company offered",
             B: "are the company offering",
-            C: "does the company offer",
+            B: "does the company offer",
             D: "did the company offer",
           },
           answer: "A",
@@ -1929,7 +1998,7 @@
           options: {
             A: "might do",
             B: "do",
-            B: "am going to do",
+            C: "am going to do",
             D: "will do",
           },
           answer: "C",
@@ -2190,14 +2259,12 @@
       function saveToLeaderboard(duration) {
         let data = localStorage.getItem("quiz_leaderboard");
         let leaderboard = data ? JSON.parse(data) : [];
-
         let existingRecordIndex = leaderboard.findIndex(
           (item) =>
             item.id === currentStudent.id &&
             item.subject === selectedSubject &&
             item.chapter === selectedChapter,
         );
-
         if (existingRecordIndex !== -1) {
           if (duration < leaderboard[existingRecordIndex].duration) {
             leaderboard[existingRecordIndex].duration = duration;
@@ -2264,7 +2331,6 @@
         showQuizSubTab("quiz-subjects");
       }
       function emergencyExit() {
-        console.log("Đang thoát khẩn cấp...");
         if (typeof victorySound !== "undefined") {
           victorySound.pause();
           victorySound.currentTime = 0;
@@ -2275,96 +2341,87 @@
         }
         let exitBox = document.getElementById("emergency-exit-box");
         if (exitBox) exitBox.style.display = "none";
-
         isRepeatMode = false;
         wrongQuestionsQueue = [];
         correctAnswersSet.clear();
         userResponses = {};
         currentQuestionIdx = 0;
-
         showTab("quiz");
         showQuizSubTab("quiz-subjects");
       }
 
-      /* =========================================
-                          🌟 MẠNG XÃ HỘI THREAD PHENIKAA CHẠY THỜI GIAN THỰC (REAL-TIME CLOUD)
-                          ========================================= */
-
+      // =========================================
+      // 💬 4. LOGIC MẠNG XÃ HỘI PHENIKAA THREADS
+      // =========================================
       async function createNewPost() {
+        // 1. Kiểm tra đăng nhập trước khi cho đăng bài
+        let savedStudent = localStorage.getItem("current_logged_student");
+        if (!savedStudent) {
+          alert("Anh Trung ơi, chưa đăng nhập thì không đăng bài được đâu!");
+          return;
+        }
+        let student = JSON.parse(savedStudent);
+
         let content = document.getElementById("thread-content").value.trim();
         let fileInput = document.getElementById("thread-image");
 
+        if (!content && (!fileInput.files || fileInput.files.length === 0)) {
+          alert("Nhập nội dung hoặc chọn ảnh đi m!");
+          return;
+        }
+
         if (kiemDuyetNoiDung(content)) {
-          alert("⚠️ Phát hiện từ ngữ nhạy cảm!");
+          alert("⚠️ Nội dung chứa từ ngữ không phù hợp!");
           return;
         }
 
         let postId = "post_" + Date.now();
-        let authorName = currentStudent.name || "Sinh viên ẩn danh";
-        let authorId = currentStudent.id || "000000";
-
         let newPost = {
           id: postId,
-          author: authorName,
-          mssv: authorId,
-          avatar: localStorage.getItem("user_avatar_base64_" + authorId) || "",
+          author: student.name,
+          mssv: student.id,
+          avatar:
+            localStorage.getItem("user_avatar_base64_" + student.id) || "",
           text: content,
           image: "",
           likes: 0,
-          likedUsers: [],
-          comments: [],
+          likedUsers: {},
+          comments: {},
           time: Date.now(),
         };
 
-        if (fileInput.files && fileInput.files[0]) {
-          console.log("Bước 1: Bắt đầu đọc file ảnh...");
-          let reader = new FileReader();
-
-          reader.onload = function (e) {
-            console.log("Bước 2: Đọc file thành công, bắt đầu nén...");
-            nenAnhThread(
-              e.target.result,
-              800,
-              600,
-              function (compressedResult) {
-                console.log("Bước 3: Nén xong, chuẩn bị đẩy lên Firebase...");
-                newPost.image = compressedResult;
-
-                database
-                  .ref("threads/" + postId)
-                  .set(newPost)
-                  .then(() => {
-                    console.log("Bước 4: Đăng bài thành công!");
-                    alert("Đăng bài thành công!");
-                    resetKhungNhapThread();
-                  })
-                  .catch((error) => {
-                    console.error("Lỗi Firebase:", error);
-                    alert("Lỗi Firebase: " + error.message);
-                  });
-              },
-            );
-          };
-
-          reader.onerror = function () {
-            console.error("Lỗi FileReader");
-            alert("Lỗi đọc file ảnh!");
-          };
-          reader.readAsDataURL(fileInput.files[0]);
-        } else {
-          console.log("Đăng bài không có ảnh...");
-          database
-            .ref("threads/" + postId)
-            .set(newPost)
-            .then(() => {
-              alert("Đăng bài thành công!");
-              resetKhungNhapThread();
-            })
-            .catch((error) => alert("Lỗi đăng bài: " + error.message));
+        // 2. Xử lý ảnh an toàn
+        try {
+          if (fileInput.files && fileInput.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+              newPost.image = e.target.result;
+              database
+                .ref("threads/" + postId)
+                .set(newPost)
+                .then(() => {
+                  alert("Đăng bài thành công!");
+                  resetKhungNhapThread();
+                })
+                .catch((e) => alert("Lỗi Firebase: " + e.message));
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+          } else {
+            // Không có ảnh
+            database
+              .ref("threads/" + postId)
+              .set(newPost)
+              .then(() => {
+                alert("Đăng bài thành công!");
+                resetKhungNhapThread();
+              })
+              .catch((e) => alert("Lỗi Firebase: " + e.message));
+          }
+        } catch (err) {
+          console.error("Lỗi khi đăng bài:", err);
+          alert("Có lỗi xảy ra, thử lại sau nhé!");
         }
       }
-
-      // CẬP NHẬT HÀM NÉN ẢNH (THÊM BẮT LỖI)
       function nenAnhThread(base64Str, maxWidth, maxHeight, callback) {
         let img = new Image();
         img.src = base64Str;
@@ -2372,8 +2429,6 @@
           let canvas = document.createElement("canvas");
           let width = img.width;
           let height = img.height;
-
-          // Chỉ thay đổi kích thước nếu ảnh vượt quá giới hạn, nhưng vẫn giữ tỷ lệ
           if (width > maxWidth || height > maxHeight) {
             if (width / height > maxWidth / maxHeight) {
               height = Math.round(height * (maxWidth / width));
@@ -2383,24 +2438,16 @@
               height = maxHeight;
             }
           }
-
           canvas.width = width;
           canvas.height = height;
-
-          // Sử dụng kỹ thuật làm sắc nét (tùy chọn)
           let ctx = canvas.getContext("2d");
           ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = "high"; // Tối ưu chất lượng
+          ctx.imageSmoothingQuality = "high";
           ctx.drawImage(img, 0, 0, width, height);
-
-          // Tăng chất lượng xuất file từ 0.7 lên 0.92
           callback(canvas.toDataURL("image/jpeg", 0.92));
         };
-        img.onerror = function () {
-          console.error("Ảnh bị lỗi không xử lý được!");
-          alert("Ảnh bị lỗi!");
-        };
       }
+
       function resetKhungNhapThread() {
         document.getElementById("thread-content").value = "";
         document.getElementById("thread-image").value = "";
@@ -2408,15 +2455,81 @@
         if (pName) pName.innerText = "";
       }
 
-      // Hàm lắng nghe Firebase và vẽ giao diện đồng bộ tức thì (Real-time)
+      // 👑 TÁCH BIỆT HÀM RENDER COMMENT ĐỂ TRÁNH LỖI LỒNG NHAU (FIX SẬP WEB)
+      function renderSingleComment(cmt, post, currentUserId, adminId) {
+        let thoiGianCmt =
+          typeof cmt.timestamp === "number"
+            ? tinhThoiGianTroiQua(cmt.timestamp)
+            : "Vừa xong";
+        let cmtTichXanh = "";
+        let cmtAvatarHtml = "";
+        let nutXoaCmtAdmin = "";
+
+        // Check Admin VIP chính chủ cả tên và MSSV
+        let isCmtAdmin =
+          cmt.user === ADMIN_INFO.name &&
+          cmt.mssv &&
+          cmt.mssv.trim() === ADMIN_INFO.id;
+        if (isCmtAdmin) {
+          cmtTichXanh = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width:13px; height:15px; object-fit:contain; margin-left:4px; vertical-align:middle;" />`;
+        }
+        let cmtAdminClass = isCmtAdmin ? "avatar-admin-vip" : "";
+
+        if (cmt.avatar) {
+          cmtAvatarHtml = `<div class="${cmtAdminClass}" style="position:relative; width:24px; height:24px; display:inline-block; margin-right:5px; vertical-align:middle;"><img src="${cmt.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
+        } else {
+          let cmtUid = cmt.mssv ? cmt.mssv.trim() : "";
+          let savedCmtAvatar = localStorage.getItem(
+            "user_avatar_base64_" + cmtUid,
+          );
+          if (savedCmtAvatar) {
+            cmtAvatarHtml = `<div class="${cmtAdminClass}" style="position:relative; width:24px; height:24px; display:inline-block; margin-right:5px; vertical-align:middle;"><img src="${savedCmtAvatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" /></div>`;
+          } else {
+            let chuCaiCmt = cmt.user ? cmt.user.charAt(0).toUpperCase() : "U";
+            cmtAvatarHtml = `<div class="${cmtAdminClass}" style="position:relative; width:24px; height:24px; display:inline-block; margin-right:5px; vertical-align:middle;"><div style="width:24px; height:24px; background:#132c63; color:white; font-size:11px; font-weight:bold; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">${chuCaiCmt}</div></div>`;
+          }
+        }
+
+        if (currentUserId === adminId) {
+          nutXoaCmtAdmin = `<span onclick="deleteComment('${post.id}', '${cmt.key}')" style="color:#ff4d4d; font-size:11px; cursor:pointer; margin-left:10px; font-weight:bold; user-select:none;">[Xóa]</span>`;
+        }
+
+        let hasLikedCmt =
+          cmt.likedUsers &&
+          Object.values(cmt.likedUsers).includes(currentUserId);
+        let cmtHeartIcon = hasLikedCmt ? "❤️" : "🤍";
+        let cmtLikesCount = cmt.likes || 0;
+        let marginStyle = cmt.parentId
+          ? "margin-left:32px; border-left:2px solid #e2e8f0; padding-left:10px;"
+          : "";
+
+        return `
+      <div class="comment-item" style="padding:8px 0; text-align:left; ${marginStyle}">
+        <div style="display:flex; align-items:flex-start; gap:6px;">
+          ${cmtAvatarHtml}
+          <div style="flex:1;">
+            <div style="background:#ffffff; padding:6px 12px; border-radius:14px; display:inline-block; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <b>${cmt.user}${cmtTichXanh}: </b><span style="color:#222;">${cmt.text}</span>
+            </div>
+            <div style="font-size:12px; color:#777; margin-top:4px; margin-left:8px; display:flex; align-items:center; gap:15px; user-select:none;">
+              <span>${thoiGianCmt}</span>
+              <span onclick="likeComment('${post.id}', '${cmt.key}')" style="cursor:pointer; font-weight:600;">${cmtHeartIcon} ${cmtLikesCount > 0 ? cmtLikesCount : "Thích"}</span>
+              <span onclick="kichHoatReplyComment('${post.id}', '${cmt.key}', '${cmt.user}')" style="cursor:pointer; font-weight:600; color:#254196;">Trả lời</span>
+              ${nutXoaCmtAdmin}
+            </div>
+          </div>
+        </div>
+      </div>`;
+      }
+
       function renderThreads() {
         let container = document.getElementById("threads-list");
         if (!container) return;
 
-        let currentUserId =
+        let currentUid =
           currentStudent && currentStudent.id ? currentStudent.id.trim() : "";
-
         const adminId = "7277979906";
+        const adminName = "trung_admin";
 
         database.ref("threads").on("value", (snapshot) => {
           let threadsData = snapshot.val();
@@ -2424,391 +2537,84 @@
 
           if (!threadsData) {
             container.innerHTML =
-              "<div style='color:#777; margin-top:20px;'>Chưa có bài đăng nào. Hãy là người đầu tiên bóc tem Thread Phenikaa nào!</div>";
+              "<div style='color:#777; margin-top:20px;'>Chưa có bài đăng nào.</div>";
             return;
           }
 
-          let posts = Object.values(threadsData);
-
-          posts.sort((a, b) => b.time - a.time);
+          let posts = Object.values(threadsData).sort(
+            (a, b) => b.time - a.time,
+          );
 
           posts.forEach((post) => {
+            // 1. XỬ LÝ QUYỀN ADMIN (Vương miện + Tích xanh)
+            let isAdmin =
+              post.mssv &&
+              post.mssv.trim() === adminId &&
+              post.author === adminName;
+            let adminClass = isAdmin ? "avatar-admin-vip" : "";
+            let tichXanhHtml = isAdmin
+              ? `<img src="./tich_xanh.jpg" style="width: 15px; height: 15px; margin-left: 5px; vertical-align: middle;" />`
+              : "";
+
+            // 2. XỬ LÝ AVATAR
+            let postAvatarHtml =
+              post.avatar && post.avatar.startsWith("data:image")
+                ? `<div class="thread-avatar ${adminClass}" style="overflow:hidden;"><img src="${post.avatar}" style="width:100%; height:100%; object-fit:cover;" /></div>`
+                : `<div class="thread-avatar ${adminClass}">${post.author ? post.author.charAt(0).toUpperCase() : "U"}</div>`;
+
+            // 3. XỬ LÝ COMMENTS (Đã khôi phục!)
             let commentsHtml = "";
-
             if (post.comments) {
-              commentsHtml = `
-                <div class="comment-box"
-                     style="margin-top:10px; padding:10px; background:#f8f9fa; border-radius:8px;">
-              `;
-
+              commentsHtml = `<div class="comment-box" style="margin-top:10px; padding:10px; background:#f8f9fa; border-radius:8px;">`;
               let rawComments = Object.keys(post.comments).map((key) => ({
                 key: key,
                 ...post.comments[key],
               }));
-
-              let rootComments = rawComments.filter((c) => !c.parentId);
-
-              let childComments = rawComments.filter((c) => c.parentId);
-
-              function renderSingleComment(cmt) {
-                let thoiGianCmt =
-                  typeof cmt.timestamp === "number"
-                    ? tinhThoiGianTroiQua(cmt.timestamp)
-                    : "Vừa xong";
-
-                let cmtTichXanh = "";
-                let cmtAvatarHtml = "";
-                let nutXoaCmtAdmin = "";
-
-                // SỬA Ở ĐÂY: Dùng && để bắt buộc khớp cả Tên VÀ MSSV
-                // Lưu ý: Đảm bảo biến ADMIN_INFO đã được khai báo ở đầu thẻ <script>
-                if (
-                  cmt.user === ADMIN_INFO.name &&
-                  cmt.mssv &&
-                  cmt.mssv.trim() === ADMIN_INFO.id
-                ) {
-                  cmtTichXanh = `
-                    <img
-                      src="./tich_xanh.jpg"
-                      alt="Tích xanh"
-                      style="width:13px; height:15px; object-fit:contain; margin-left:4px; vertical-align:middle;"
-                    />`;
-                }
-
-                // Tương tự, sửa luôn đoạn class admin để khớp cả 2 điều kiện
-                let cmtAdminClass =
-                  cmt.user === ADMIN_INFO.name &&
-                  cmt.mssv &&
-                  cmt.mssv.trim() === ADMIN_INFO.id
-                    ? "avatar-admin-vip"
-                    : "";
-                // Avatar
-                if (cmt.avatar) {
-                  cmtAvatarHtml = `
-                    <div
-                      class="${cmtAdminClass}"
-                      style="
-                        position:relative;
-                        width:24px;
-                        height:24px;
-                        display:inline-block;
-                        margin-right:5px;
-                        vertical-align:middle;
-                      "
-                    >
-                      <img
-                        src="${cmt.avatar}"
-                        style="
-                          width:100%;
-                          height:100%;
-                          object-fit:cover;
-                          border-radius:50%;
-                        "
-                      />
-                    </div>
-                  `;
-                } else {
-                  let cmtUid = cmt.mssv ? cmt.mssv.trim() : "";
-
-                  let savedCmtAvatar = localStorage.getItem(
-                    "user_avatar_base64_" + cmtUid,
-                  );
-
-                  if (savedCmtAvatar) {
-                    cmtAvatarHtml = `
-                      <div
-                        class="${cmtAdminClass}"
-                        style="
-                          position:relative;
-                          width:24px;
-                          height:24px;
-                          display:inline-block;
-                          margin-right:5px;
-                          vertical-align:middle;
-                        "
-                      >
-                        <img
-                          src="${savedCmtAvatar}"
-                          style="
-                            width:100%;
-                            height:100%;
-                            object-fit:cover;
-                            border-radius:50%;
-                          "
-                        />
-                      </div>
-                    `;
-                  } else {
-                    let chuCaiCmt = cmt.user
-                      ? cmt.user.charAt(0).toUpperCase()
-                      : "U";
-
-                    cmtAvatarHtml = `
-                      <div
-                        class="${cmtAdminClass}"
-                        style="
-                          position:relative;
-                          width:24px;
-                          height:24px;
-                          display:inline-block;
-                          margin-right:5px;
-                          vertical-align:middle;
-                        "
-                      >
-                        <div
-                          style="
-                            width:24px;
-                            height:24px;
-                            background:#132c63;
-                            color:white;
-                            font-size:11px;
-                            font-weight:bold;
-                            border-radius:50%;
-                            display:inline-flex;
-                            align-items:center;
-                            justify-content:center;
-                          "
-                        >
-                          ${chuCaiCmt}
-                        </div>
-                      </div>
-                    `;
-                  }
-                }
-
-                // Nút xóa dành cho admin
-                if (currentUserId === adminId) {
-                  nutXoaCmtAdmin = `
-                    <span
-                      onclick="deleteComment('${post.id}', '${cmt.key}')"
-                      style="
-                        color:#ff4d4d;
-                        font-size:11px;
-                        cursor:pointer;
-                        margin-left:10px;
-                        font-weight:bold;
-                        user-select:none;
-                      "
-                    >
-                      [Xóa]
-                    </span>
-                  `;
-                }
-
-                // Like comment
-                let hasLikedCmt =
-                  cmt.likedUsers &&
-                  Object.values(cmt.likedUsers).includes(currentUserId);
-
-                let cmtHeartIcon = hasLikedCmt ? "❤️" : "🤍";
-
-                let cmtLikesCount = cmt.likes || 0;
-
-                // Comment trả lời
-                let marginStyle = cmt.parentId
-                  ? "margin-left:32px; border-left:2px solid #e2e8f0; padding-left:10px;"
-                  : "";
-
-                return `
-                  <div
-                    class="comment-item"
-                    style="
-                      padding:8px 0;
-                      text-align:left;
-                      ${marginStyle}
-                    "
-                  >
-                    <div
-                      style="
-                        display:flex;
-                        align-items:flex-start;
-                        gap:6px;
-                      "
-                    >
-                      ${cmtAvatarHtml}
-
-                      <div style="flex:1;">
-                        <div
-                          style="
-                            background:#ffffff;
-                            padding:6px 12px;
-                            border-radius:14px;
-                            display:inline-block;
-                            box-shadow:0 1px 3px rgba(0,0,0,0.05);
-                          "
-                        >
-                          <b>
-                            ${cmt.user}
-                            ${cmtTichXanh}:
-                          </b>
-
-                          <span style="color:#222;">
-                            ${cmt.text}
-                          </span>
-                        </div>
-
-                        <div
-                          style="
-                            font-size:12px;
-                            color:#777;
-                            margin-top:4px;
-                            margin-left:8px;
-                            display:flex;
-                            align-items:center;
-                            gap:15px;
-                            user-select:none;
-                          "
-                        >
-                          <span>
-                            ${thoiGianCmt}
-                          </span>
-
-                          <span
-                            onclick="likeComment('${post.id}', '${cmt.key}')"
-                            style="
-                              cursor:pointer;
-                              font-weight:600;
-                            "
-                          >
-                            ${cmtHeartIcon}
-                            ${cmtLikesCount > 0 ? cmtLikesCount : "Thích"}
-                          </span>
-
-                          <span
-                            onclick="kichHoatReplyComment('${post.id}', '${cmt.key}', '${cmt.user}')"
-                            style="
-                              cursor:pointer;
-                              font-weight:600;
-                              color:#254196;
-                            "
-                          >
-                            Trả lời
-                          </span>
-
-                          ${nutXoaCmtAdmin}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                `;
-              }
-              rootComments.forEach((rootCmt) => {
-                commentsHtml += renderSingleComment(rootCmt);
-                let relatedChildren = childComments.filter(
-                  (child) => child.parentId === rootCmt.key,
+              rawComments.forEach((cmt) => {
+                commentsHtml += renderSingleComment(
+                  cmt,
+                  post,
+                  currentUid,
+                  adminId,
                 );
-                relatedChildren.forEach((childCmt) => {
-                  commentsHtml += renderSingleComment(childCmt);
-                });
               });
-
               commentsHtml += `</div>`;
             }
 
-            let tichXanhHtml = "";
-            if (post.mssv && post.mssv.trim() === adminId) {
-              tichXanhHtml = `<img src="./tich_xanh.jpg" alt="Tích xanh" style="width: 15px; height: 15px; object-fit: contain; margin-left: 5px; vertical-align: middle;" />`;
-            }
-
-            let adminClass =
-              post.mssv && post.mssv.trim() === adminId
-                ? "avatar-admin-vip"
-                : "";
-            let postAvatarHtml;
-
-            // 1. Ưu tiên lấy ảnh từ Firebase (đã đồng bộ)
-            if (post.avatar && post.avatar.startsWith("data:image")) {
-              postAvatarHtml = `
-                                <div class="${adminClass}" style="position: relative; width: 38px; height: 38px;">
-                                    <img src="${post.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
-                                </div>`;
-            }
-            // 2. Nếu chưa có, kiểm tra tiếp trong localStorage
-            else if (post.mssv) {
-              let savedPostAvatar = localStorage.getItem(
-                "user_avatar_base64_" + post.mssv.trim(),
-              );
-              if (savedPostAvatar) {
-                postAvatarHtml = `
-                                    <div class="${adminClass}" style="position: relative; width: 38px; height: 38px;">
-                                        <div class="thread-avatar" style="overflow: hidden; width: 100%; height: 100%; border-radius: 50%;">
-                                            <img src="${savedPostAvatar}" style="width:100%; height:100%; object-fit:cover;" />
-                                        </div>
-                                    </div>`;
-              } else {
-                // 3. Cuối cùng mới hiển thị chữ cái đầu
-                postAvatarHtml = `<div class="thread-avatar ${adminClass}">${post.author.charAt(0).toUpperCase()}</div>`;
-              }
-            }
-            // 4. Nếu không có cả mssv
-            else {
-              postAvatarHtml = `<div class="thread-avatar ${adminClass}">${post.author.charAt(0).toUpperCase()}</div>`;
-            }
-
+            // 4. XỬ LÝ MENU XÓA/SỬA
             let quyen_admin = "";
-            if (currentUserId !== "") {
-              if (currentUserId === adminId) {
-                let nutSuaCuaAdmin = "";
-                if (post.mssv && post.mssv.trim() === adminId) {
-                  nutSuaCuaAdmin = `<div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>`;
-                }
-                quyen_admin = `
-                                  <div class="khung-menu-bai-viet">
-                                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
-                                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
-                                      ${nutSuaCuaAdmin}
-                                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài (Admin)</div>
-                                    </div>
-                                  </div>`;
-              } else if (post.mssv && post.mssv.trim() === currentUserId) {
-                quyen_admin = `
-                                  <div class="khung-menu-bai-viet">
-                                    <button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button>
-                                    <div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">
-                                      <div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>
-                                      <div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài</div>
-                                    </div>
-                                  </div>`;
-              }
+            let isOwner = post.mssv && post.mssv.trim() === currentUid;
+            if (isOwner || currentUid === adminId) {
+              let menuItems = isOwner
+                ? `<div class="muc-lua-chon-con" onclick="editPost('${post.id}')">✏️ Chỉnh sửa</div>`
+                : "";
+              menuItems += `<div class="muc-lua-chon-con nut-xoa-bai" onclick="deletePost('${post.id}')">🗑️ Xóa bài</div>`;
+              quyen_admin = `<div class="khung-menu-bai-viet"><button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button><div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">${menuItems}</div></div>`;
             }
 
-            let thoiGianHienThi =
-              typeof post.time === "number"
-                ? tinhThoiGianTroiQua(post.time)
-                : post.time;
-            let imageHtml = post.image
-              ? `<img src="${post.image}" class="thread-img"/>`
-              : "";
-            let isLiked =
-              post.likedUsers &&
-              Object.values(post.likedUsers).includes(currentUserId);
-            let heartColor = isLiked ? "❤️" : "🤍";
-
+            // 5. RENDER HTML
             let cardHtml = `
-                          <div class="thread-card" id="card-${post.id}">
-                            <div class="thread-user-box">
-                              ${postAvatarHtml}
-                              <div>
-                                <div class="thread-username" style="display: flex; align-items: center; font-weight: bold;">${post.author}${tichXanhHtml}</div>
-                              </div>
-                              <div class="thread-time">${thoiGianHienThi}</div>${quyen_admin}
-                            </div>
-                            <p class="thread-text" id="text-${post.id}">${post.text}</p>${imageHtml}
-                            <div class="thread-actions">
-                              <div class="action-btn" onclick="likePost('${post.id}')">${heartColor} <span>${post.likes || 0}</span></div>
-                              <div class="action-btn" onclick="focusCommentInput('${post.id}')">💬 <span>${post.comments ? Object.keys(post.comments).length : 0}</span></div>
-                            </div>
-                            ${commentsHtml}
-                            <div style="display:flex; flex-direction: column; gap:4px; margin-top:10px; padding-top:5px;">
-                              <div id="reply-status-${post.id}" style="font-size: 12px; color: #254196; display: none; text-align: left; padding-left: 6px;">
-                                Đang trả lời bình luận... <span onclick="huyReplyComment('${post.id}')" style="color:#ff4d4d; cursor:pointer; margin-left:5px;">[Hủy]</span>
-                              </div>
-                              <div style="display:flex; gap:8px;">
-                                <input type="text" id="input-cmt-${post.id}" data-parent="" placeholder="Viết bình luận..." onkeydown="if(event.key === 'Enter') { event.preventDefault(); submitComment('${post.id}'); }" style="flex:1; padding:8px 12px; border:1px solid #ddd; border-radius:16px; font-size:13px; outline:none"/>
-                                <button type="button" onclick="submitComment('${post.id}')" style="background:#254196; color:white; border:none; padding:6px 12px; border-radius:16px; font-size:13px; cursor:pointer; font-weight:bold;">Gửi</button>
-                              </div>
-                            </div>
-                          </div>`;
+                <div class="thread-card" id="card-${post.id}">
+                    <div class="thread-user-box">
+                        ${postAvatarHtml}
+                        <div class="thread-username" style="display:flex; align-items:center;">${post.author || "Ẩn danh"}${tichXanhHtml}</div>
+                        ${quyen_admin}
+                    </div>
+                    <p class="thread-text">${post.text || ""}</p>
+                    ${post.image ? `<img src="${post.image}" class="thread-img"/>` : ""}
+                    <div class="thread-actions">
+                        <div class="action-btn" onclick="likePost('${post.id}')">❤️ <span>${post.likes || 0}</span></div>
+                        <div class="action-btn" onclick="focusCommentInput('${post.id}')">💬 <span>${post.comments ? Object.keys(post.comments).length : 0}</span></div>
+                    </div>
+                    ${commentsHtml}
+                    <div style="display:flex; flex-direction: column; gap:4px; margin-top:10px;">
+                        <div id="reply-status-${post.id}" style="font-size: 12px; color: #254196; display: none;"></div>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="input-cmt-${post.id}" data-parent="" placeholder="Viết bình luận..." onkeydown="if(event.key === 'Enter') { event.preventDefault(); submitComment('${post.id}'); }" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:16px; outline:none"/>
+                            <button onclick="submitComment('${post.id}')" style="background:#254196; color:white; border:none; padding:6px 12px; border-radius:16px; cursor:pointer;">Gửi</button>
+                        </div>
+                    </div>
+                </div>`;
             container.innerHTML += cardHtml;
           });
         });
@@ -2819,25 +2625,16 @@
             ? currentStudent.id.trim()
             : "guest";
         if (currentUserId === "guest") return;
-
-        let postRef = database.ref(`threads/${postId}`);
-
-        // Sử dụng transaction để cập nhật trực tiếp trên server, không cần load lại cả bài viết
-        postRef.transaction((post) => {
+        database.ref(`threads/${postId}`).transaction((post) => {
           if (post) {
             if (!post.likedUsers) post.likedUsers = {};
-
-            let likedValues = Object.values(post.likedUsers);
             let userKey = Object.keys(post.likedUsers).find(
               (key) => post.likedUsers[key] === currentUserId,
             );
-
             if (userKey) {
-              // Bỏ like
               delete post.likedUsers[userKey];
               post.likes = Math.max(0, (post.likes || 1) - 1);
             } else {
-              // Like
               let newLikeKey = "like_" + Date.now();
               post.likedUsers[newLikeKey] = currentUserId;
               post.likes = (post.likes || 0) + 1;
@@ -2882,7 +2679,6 @@
           timestamp: Date.now(),
           parentId: parentId,
         };
-
         database
           .ref(`threads/${postId}/comments`)
           .push(newComment)
@@ -2903,39 +2699,51 @@
         if (targetMenu) targetMenu.classList.toggle("hien-thi");
       }
 
-      function deletePost(postId) {
+      window.deletePost = function (postId) {
+        if (!postId) return;
         if (confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
-          database.ref("threads/" + postId).remove();
+          // Thêm kiểm tra database tồn tại trước khi xóa
+          if (typeof database !== "undefined") {
+            database
+              .ref("threads/" + postId)
+              .remove()
+              .then(() => alert("Đã xóa bài!"))
+              .catch((err) => alert("Lỗi khi xóa: " + err.message));
+          }
         }
-      }
-
+      };
       function deleteComment(postId, cmtKey) {
+        let currentUid = currentStudent.id ? currentStudent.id.trim() : "";
+        const adminId = "7277979906";
+
+        // Admin thì cho xóa, hoặc nếu là chủ bình luận đó thì cho xóa
         if (
-          confirm("Admin có chắc chắn muốn xóa bình luận độc hại này không?")
+          currentUid === adminId ||
+          confirm("Bạn có chắc muốn xóa bình luận này?")
         ) {
           database.ref(`threads/${postId}/comments/${cmtKey}`).remove();
+        } else {
+          alert("Bạn không có quyền xóa bình luận này!");
         }
       }
-
       function editPost(postId) {
         let textElement = document.getElementById(`text-${postId}`);
         if (!textElement) return;
         let currentText = textElement.innerText;
         textElement.innerHTML = `
-                          <div style="margin-top: 10px;">
-                            <textarea id="edit-input-${postId}" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #005da3; border-radius: 6px; outline: none; resize: none; font-family: inherit; font-size: 14px; box-sizing: border-box;">${currentText}</textarea>
-                            <div style="text-align: right; margin-top: 5px;">
-                              <button onclick="cancelEdit('${postId}', \`${currentText}\`)" style="background: #6c757d; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; margin-right: 5px;">Hủy</button>
-                              <button onclick="saveEditPost('${postId}')" style="background: #28a745; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: bold;">Lưu lại</button>
-                            </div>
-                          </div>`;
+      <div style="margin-top: 10px;">
+        <textarea id="edit-input-${postId}" style="width: 100%; height: 60px; padding: 8px; border: 1px solid #005da3; border-radius: 6px; outline: none; resize: none; font-family: inherit; font-size: 14px; box-sizing: border-box;">${currentText}</textarea>
+        <div style="text-align: right; margin-top: 5px;">
+          <button onclick="cancelEdit('${postId}', \`${currentText}\`)" style="background: #6c757d; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; margin-right: 5px;">Hủy</button>
+          <button onclick="saveEditPost('${postId}')" style="background: #28a745; color: white; border: none; padding: 4px 12px; border-radius: 12px; font-size: 12px; cursor: pointer; font-weight: bold;">Lưu lại</button>
+        </div>
+      </div>`;
       }
 
       function cancelEdit(postId, originalText) {
         let textElement = document.getElementById(`text-${postId}`);
         if (textElement) textElement.innerText = originalText;
       }
-
       function saveEditPost(postId) {
         let inputEl = document.getElementById(`edit-input-${postId}`);
         if (!inputEl) return;
@@ -2993,13 +2801,9 @@
         if (menu) menu.classList.remove("hien-thi-user");
       });
 
-      let menuKhung = document.getElementById("menu-tha-tai-khoan");
-      if (menuKhung) {
-        menuKhung.addEventListener("click", function (event) {
-          event.stopPropagation();
-        });
-      }
-
+      // =========================================
+      // 👤 5. ĐỒNG BỘ TÀI KHOẢN VÀ AVATAR
+      // =========================================
       function hienThiGiaoDienTaiKhoan() {
         let tenSVDong = currentStudent.name
           ? currentStudent.name
@@ -3007,13 +2811,11 @@
         let mssvSVDong = currentStudent.id ? currentStudent.id : "000000";
         let savedImg = localStorage.getItem("user_avatar_base64_" + mssvSVDong);
         let btnEl = document.getElementById("avatar-nut-bam");
-
         if (btnEl) {
           if (savedImg) {
             btnEl.innerHTML = `<img src="${savedImg}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
           } else {
-            let chuCaiDau = tenSVDong.trim().charAt(0).toUpperCase();
-            btnEl.innerHTML = `<span id="avatar-chu-cai">${chuCaiDau}</span>`;
+            btnEl.innerHTML = `<span id="avatar-chu-cai">${tenSVDong.trim().charAt(0).toUpperCase()}</span>`;
           }
         }
       }
@@ -3021,27 +2823,21 @@
       function luuThayDoiTaiKhoan() {
         let newName = document.getElementById("menu-input-ten").value.trim();
         let newId = document.getElementById("menu-input-mssv").value.trim();
-
         if (newName === "" || newId === "") {
           alert("Họ tên và MSSV không được để trống!");
           return;
         }
-
-        // Admin bypass (giữ nguyên)
         if (newId === "7277979906" && newName !== "trung_admin") {
           alert("Thông tin xác thực Admin không hợp lệ!");
           return;
         }
 
-        // 🌟 MỚI: Kiểm tra trùng MSSV trong toàn bộ hệ thống bài viết
         database.ref("threads").once("value", (snapshot) => {
           let threadsData = snapshot.val();
           let isDuplicated = false;
-
           if (threadsData) {
             Object.keys(threadsData).forEach((postKey) => {
               let post = threadsData[postKey];
-              // Nếu MSSV đã tồn tại ở một bài viết khác (không phải của chính mình) -> Báo trùng
               if (
                 post.mssv &&
                 post.mssv.trim() === newId &&
@@ -3051,36 +2847,38 @@
               }
             });
           }
-
           if (isDuplicated) {
             alert(
               "⚠️ Tài khoản này (MSSV: " +
                 newId +
                 ") đã tồn tại trong hệ thống. Vui lòng cập nhật MSSV khác!",
             );
-            return;
           } else {
-            // Nếu không trùng, tiến hành lưu như cũ
             thucHienLuuThayDoi(newName, newId);
           }
         });
       }
 
-      // Tách logic lưu ra một hàm riêng để code sạch hơn
       function thucHienLuuThayDoi(newName, newId) {
         let oldId = currentStudent.id ? currentStudent.id.trim() : "000000";
-        let codeMoiAvatar =
-          localStorage.getItem("user_avatar_base64_" + oldId) ||
-          localStorage.getItem("user_avatar_base64_" + newId) ||
-          "";
+        let oldName = currentStudent.name ? currentStudent.name.trim() : "";
 
-        if (newId !== oldId) {
-          if (codeMoiAvatar) {
-            localStorage.setItem("user_avatar_base64_" + newId, codeMoiAvatar);
-            localStorage.removeItem("user_avatar_base64_" + oldId);
-          }
+        // TẠO KEY ĐỊNH DANH DUY NHẤT DỰA TRÊN CẢ TÊN VÀ MSSV
+        let newUniqueKey = newName + "_" + newId;
+        let oldUniqueKey = oldName + "_" + oldId;
+
+        // Lấy ảnh cũ theo định danh cũ
+        let currentAvatar =
+          localStorage.getItem("user_avatar_base64_" + oldUniqueKey) || "";
+
+        // NẾU THÔNG TIN BỊ THAY ĐỔI -> RESET AVATAR
+        // Tức là nếu Tên hoặc MSSV khác với cũ thì xóa sạch ảnh cũ trong localStorage
+        if (newName !== oldName || newId !== oldId) {
+          localStorage.removeItem("user_avatar_base64_" + oldUniqueKey);
+          currentAvatar = ""; // Reset về rỗng để bắt đầu chọn ảnh mới
         }
 
+        // Cập nhật thông tin sinh viên mới
         currentStudent.name = newName;
         currentStudent.id = newId;
         localStorage.setItem(
@@ -3088,34 +2886,35 @@
           JSON.stringify(currentStudent),
         );
 
-        // Cập nhật tên và avatar trong tất cả bài cũ
+        // Cập nhật Firebase (giữ nguyên logic của anh)
         database.ref("threads").once("value", (snapshot) => {
           let threadsData = snapshot.val();
           if (threadsData) {
             let updates = {};
             Object.keys(threadsData).forEach((postKey) => {
               let post = threadsData[postKey];
-              if (
-                post.mssv &&
-                (post.mssv.trim() === oldId || post.mssv.trim() === newId)
-              ) {
+              if (post.mssv && post.mssv.trim() === oldId) {
                 updates[`threads/${postKey}/author`] = newName;
-                updates[`threads/${postKey}/avatar`] = codeMoiAvatar;
                 updates[`threads/${postKey}/mssv`] = newId;
+                // Nếu đổi người, cần xóa ảnh cũ ở bài đăng cũ (hoặc cập nhật ảnh rỗng)
+                if (newName !== oldName || newId !== oldId) {
+                  updates[`threads/${postKey}/avatar`] = "";
+                }
               }
               if (post.comments) {
                 Object.keys(post.comments).forEach((cmtKey) => {
                   if (
                     post.comments[cmtKey].mssv &&
-                    (post.comments[cmtKey].mssv.trim() === oldId ||
-                      post.comments[cmtKey].mssv.trim() === newId)
+                    post.comments[cmtKey].mssv.trim() === oldId
                   ) {
                     updates[`threads/${postKey}/comments/${cmtKey}/user`] =
                       newName;
-                    updates[`threads/${postKey}/comments/${cmtKey}/avatar`] =
-                      codeMoiAvatar;
                     updates[`threads/${postKey}/comments/${cmtKey}/mssv`] =
                       newId;
+                    if (newName !== oldName || newId !== oldId) {
+                      updates[`threads/${postKey}/comments/${cmtKey}/avatar`] =
+                        "";
+                    }
                   }
                 });
               }
@@ -3127,24 +2926,23 @@
         hienThiGiaoDienTaiKhoan();
         let menu = document.getElementById("menu-tha-tai-khoan");
         if (menu) menu.classList.remove("hien-thi-user");
-        alert("Cập nhật thông tin thành công! 🎉");
+
+        alert(
+          newName !== oldName || newId !== oldId
+            ? "Đã đổi người dùng! Avatar đã được reset, hãy chọn ảnh mới nhé."
+            : "Cập nhật thông tin thành công!",
+        );
       }
       function capNhatAvatarTaiKhoan(input) {
         let mssv = currentStudent.id;
         if (!mssv) return alert("Vui lòng đăng nhập!");
-
         if (input.files && input.files[0]) {
           let reader = new FileReader();
           reader.onload = function (e) {
             let base64Img = e.target.result;
-            // 1. Lưu vào Firebase để đồng bộ mọi máy
             database.ref("users/" + mssv + "/avatar").set(base64Img);
-            // 2. Vẫn lưu local để dùng nhanh
             localStorage.setItem("user_avatar_base64_" + mssv, base64Img);
-
-            // 3. CẬP NHẬT LẠI TẤT CẢ BÀI ĐĂNG CŨ CỦA MÌNH
             capNhatAnhTatCaBaiDangCu(mssv, base64Img);
-
             hienThiGiaoDienTaiKhoan();
             alert("Đã đồng bộ avatar lên hệ thống!");
           };
@@ -3152,7 +2950,6 @@
         }
       }
 
-      // Hàm này đi quét và update tất cả bài đăng/comment cũ của người dùng
       function capNhatAnhTatCaBaiDangCu(mssv, newAvatar) {
         database.ref("threads").once("value", (snapshot) => {
           let updates = {};
@@ -3161,7 +2958,6 @@
             if (post.mssv === mssv) {
               updates["threads/" + post.id + "/avatar"] = newAvatar;
             }
-            // Quét cả comment
             if (post.comments) {
               Object.keys(post.comments).forEach((cmtKey) => {
                 if (post.comments[cmtKey].mssv === mssv) {
@@ -3182,147 +2978,49 @@
         }
       }
 
-      /* 👑 CAROUSEL BANNER TRANG CHỦ MƯỢT MÀ CHỐNG TREO MÀN XANH */
-(function () {
-  // Logic chọn "sân khấu" dựa trên độ rộng màn hình
-  let isMobile = window.innerWidth <= 768;
-  const container = isMobile 
-                    ? document.getElementById("carousel-container-mobile") 
-                    : document.getElementById("carousel-container-pc");
-  const track = isMobile 
-                ? document.getElementById("carousel-track-mobile") 
-                : document.getElementById("carousel-track-pc");
-  
-  if (!container || !track) return;
+      // =========================================
+      // 👑 6. BANNER CAROUSEL HOẠT ĐỘNG THÔNG MINH
+      // =========================================
+      (function () {
+        let isMobile = window.innerWidth <= 768;
+        const container = document.getElementById(
+          isMobile ? "carousel-container-mobile" : "carousel-container-pc",
+        );
+        const track = document.getElementById(
+          isMobile ? "carousel-track-mobile" : "carousel-track-pc",
+        );
+
+        if (!container || !track) return;
 
         const originalSlides = Array.from(track.children);
+        if (originalSlides.length === 0) return;
+
         const firstClone = originalSlides[0].cloneNode(true);
         const lastClone =
           originalSlides[originalSlides.length - 1].cloneNode(true);
-
         track.appendChild(firstClone);
         track.insertBefore(lastClone, originalSlides[0]);
 
         let slides = Array.from(track.children);
         let currentIndex = 1;
-        let isDragging = false;
-        let startX = 0;
-        let currentTranslate = 0;
-        let prevTranslate = 0;
-        let autoPlayTimer = null;
-
-        // Hàm tính toán lại tọa độ chuẩn, nếu lỗi kích thước thì ép trượt về ảnh đầu tiên
-        function resetSliderSize() {
-          // BỔ SUNG: Kiểm tra xem container có đang hiển thị không (nếu width=0 thì bỏ qua không reset)
-          if (container.offsetWidth === 0) {
-            // Đợi một chút rồi thử lại hoặc không làm gì để tránh làm hỏng trạng thái hiện tại
-            return;
-          }
-
-          let containerWidth = container.offsetWidth;
-          track.style.transition = "none";
-          currentTranslate = currentIndex * -containerWidth;
-          prevTranslate = currentTranslate;
-          track.style.transform = `translateX(${currentTranslate}px)`;
-        }
-
-        resetSliderSize();
-
-        function setSliderPosition() {
-          track.style.transform = `translateX(${currentTranslate}px)`;
-        }
+        let autoPlayTimer = setInterval(() => {
+          currentIndex++;
+          track.style.transition = "transform 0.5s ease-in-out";
+          track.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }, 3500);
 
         track.addEventListener("transitionend", () => {
-          let containerWidth = container.offsetWidth || window.innerWidth;
-          if (
-            slides[currentIndex].alt === firstClone.alt ||
-            currentIndex === slides.length - 1
-          ) {
+          if (currentIndex >= slides.length - 1) {
             track.style.transition = "none";
             currentIndex = 1;
-            currentTranslate = -containerWidth;
-            prevTranslate = currentTranslate;
-            setSliderPosition();
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
           }
-          if (
-            slides[currentIndex].alt === lastClone.alt ||
-            currentIndex === 0
-          ) {
+          if (currentIndex <= 0) {
             track.style.transition = "none";
             currentIndex = slides.length - 2;
-            currentTranslate = currentIndex * -containerWidth;
-            prevTranslate = currentTranslate;
-            setSliderPosition();
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
           }
         });
-
-        function changeSlide(index) {
-          let containerWidth = container.offsetWidth || window.innerWidth;
-          currentIndex = index;
-          track.style.transition = "transform 0.5s ease-in-out";
-          currentTranslate = currentIndex * -containerWidth;
-          prevTranslate = currentTranslate;
-          setSliderPosition();
-        }
-
-        function startAutoPlay() {
-          stopAutoPlay();
-          autoPlayTimer = setInterval(() => {
-            changeSlide(currentIndex + 1);
-          }, 3500);
-        }
-        function stopAutoPlay() {
-          if (autoPlayTimer) clearInterval(autoPlayTimer);
-        }
-
-        container.addEventListener("mousedown", startDrag);
-        container.addEventListener("mousemove", dragMove);
-        container.addEventListener("mouseup", endDrag);
-        container.addEventListener("mouseleave", endDrag);
-        container.addEventListener("touchstart", startDrag, { passive: true });
-        container.addEventListener("touchmove", dragMove, { passive: true });
-        container.addEventListener("touchend", endDrag);
-
-        function startDrag(e) {
-          stopAutoPlay();
-          isDragging = true;
-          container.style.cursor = "grabbing";
-          startX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
-          track.style.transition = "none";
-        }
-        function dragMove(e) {
-          if (!isDragging) return;
-          const currentX = e.type.includes("touch")
-            ? e.touches[0].clientX
-            : e.clientX;
-          currentTranslate = prevTranslate + (currentX - startX);
-          setSliderPosition();
-        }
-        function endDrag() {
-          if (!isDragging) return;
-          isDragging = false;
-          container.style.cursor = "grab";
-          const movedBy = currentTranslate - prevTranslate;
-          if (movedBy < -100) changeSlide(currentIndex + 1);
-          else if (movedBy > 100) changeSlide(currentIndex - 1);
-          else changeSlide(currentIndex);
-          startAutoPlay();
-        }
-
-        window.addEventListener("resize", resetSliderSize);
-
-        document.addEventListener("visibilitychange", () => {
-          if (!document.hidden) {
-            setTimeout(() => {
-              resetSliderSize();
-              startAutoPlay();
-            }, 100);
-          } else {
-            stopAutoPlay();
-          }
-        });
-
-        startAutoPlay();
       })();
     </script>
   </body>
