@@ -1823,6 +1823,7 @@
         let nameInput = document.getElementById("student-name").value.trim();
         let idInput = document.getElementById("student-id").value.trim();
 
+        // 1. Kiểm tra trước, nếu sai thì chặn luôn không cho làm gì cả
         if (nameInput === "" || idInput === "") {
           alert(
             "Vui lòng nhập đầy đủ Họ tên và Mã số sinh viên trước khi vào học nhé!",
@@ -1830,18 +1831,24 @@
           return;
         }
 
+        // 2. Gán dữ liệu vào object rồi mới làm tiếp
         currentStudent.name = nameInput;
         currentStudent.id = idInput;
 
+        // 3. Lưu localStorage
         localStorage.setItem(
           "current_logged_student",
           JSON.stringify(currentStudent),
         );
+
+        // 4. Cập nhật giao diện và ẩn màn hình đăng nhập
         hienThiGiaoDienTaiKhoan();
         document.getElementById("welcome-screen").style.display = "none";
+
+        // 5. GỌI HÀM ONLINE VÀ RENDER SAU KHI ĐÃ CÓ DỮ LIỆU CHÍNH XÁC
+        updateOnlineStatus();
         renderThreads();
       }
-
       // =========================================
       // 📝 3. LOGIC HỆ THỐNG TRẮC NGHIỆM (QUIZ)
       // =========================================
@@ -2562,7 +2569,13 @@
                 ? `<div class="thread-avatar ${adminClass}" style="overflow:hidden;"><img src="${post.avatar}" style="width:100%; height:100%; object-fit:cover;" /></div>`
                 : `<div class="thread-avatar ${adminClass}">${post.author ? post.author.charAt(0).toUpperCase() : "U"}</div>`;
 
-            // 3. XỬ LÝ COMMENTS (Đã khôi phục!)
+            // 3. XỬ LÝ THỜI GIAN (KHÔI PHỤC)
+            let thoiGianHienThi =
+              typeof post.time === "number"
+                ? tinhThoiGianTroiQua(post.time)
+                : post.time;
+
+            // 4. XỬ LÝ COMMENTS
             let commentsHtml = "";
             if (post.comments) {
               commentsHtml = `<div class="comment-box" style="margin-top:10px; padding:10px; background:#f8f9fa; border-radius:8px;">`;
@@ -2581,7 +2594,7 @@
               commentsHtml += `</div>`;
             }
 
-            // 4. XỬ LÝ MENU XÓA/SỬA
+            // 5. XỬ LÝ MENU XÓA/SỬA
             let quyen_admin = "";
             let isOwner = post.mssv && post.mssv.trim() === currentUid;
             if (isOwner || currentUid === adminId) {
@@ -2592,12 +2605,20 @@
               quyen_admin = `<div class="khung-menu-bai-viet"><button class="nut-ba-cham-bai-viet" onclick="toggleThreadMenu(event, '${post.id}')">•••</button><div class="menu-lua-chon-tha-xuong" id="menu-${post.id}">${menuItems}</div></div>`;
             }
 
-            // 5. RENDER HTML
+            // 6. RENDER HTML (Đã có đủ Thời gian + Avatar + Admin + Comment)
+            // Thay đoạn 6 trong hàm renderThreads của anh bằng đoạn này
             let cardHtml = `
                 <div class="thread-card" id="card-${post.id}">
                     <div class="thread-user-box">
                         ${postAvatarHtml}
-                        <div class="thread-username" style="display:flex; align-items:center;">${post.author || "Ẩn danh"}${tichXanhHtml}</div>
+                        <div style="display:flex; align-items:center; gap: 8px;">
+                            <div class="thread-username" style="display:flex; align-items:center;">
+                                ${post.author || "Ẩn danh"}${tichXanhHtml}
+                            </div>
+                            <div class="thread-time" style="margin-left: 0; font-size: 13px; color: #777;">
+                                • ${thoiGianHienThi}
+                            </div>
+                        </div>
                         ${quyen_admin}
                     </div>
                     <p class="thread-text">${post.text || ""}</p>
@@ -2809,17 +2830,35 @@
           ? currentStudent.name
           : "Sinh viên ẩn danh";
         let mssvSVDong = currentStudent.id ? currentStudent.id : "000000";
-        let savedImg = localStorage.getItem("user_avatar_base64_" + mssvSVDong);
         let btnEl = document.getElementById("avatar-nut-bam");
-        if (btnEl) {
-          if (savedImg) {
-            btnEl.innerHTML = `<img src="${savedImg}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
-          } else {
-            btnEl.innerHTML = `<span id="avatar-chu-cai">${tenSVDong.trim().charAt(0).toUpperCase()}</span>`;
-          }
+        if (!btnEl) return;
+
+        // 1. Tải nhanh từ localStorage trước
+        let savedImg = localStorage.getItem("user_avatar_base64_" + mssvSVDong);
+        if (savedImg) {
+          btnEl.innerHTML = `<img src="${savedImg}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+        } else {
+          btnEl.innerHTML = `<span id="avatar-chu-cai">${tenSVDong.trim().charAt(0).toUpperCase()}</span>`;
+        }
+
+        // 2. Lắng nghe Realtime từ Firebase (cập nhật nếu có ảnh mới trên cloud)
+        if (currentStudent.id) {
+          database
+            .ref("users/" + currentStudent.id + "/avatar")
+            .on("value", (snapshot) => {
+              let firebaseAvatar = snapshot.val();
+              if (firebaseAvatar) {
+                // Cập nhật vào localStorage để lần sau mở web nhanh hơn
+                localStorage.setItem(
+                  "user_avatar_base64_" + mssvSVDong,
+                  firebaseAvatar,
+                );
+                // Cập nhật giao diện ngay lập tức
+                btnEl.innerHTML = `<img src="${firebaseAvatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+              }
+            });
         }
       }
-
       function luuThayDoiTaiKhoan() {
         let newName = document.getElementById("menu-input-ten").value.trim();
         let newId = document.getElementById("menu-input-mssv").value.trim();
@@ -2955,22 +2994,26 @@
           let updates = {};
           snapshot.forEach((child) => {
             let post = child.val();
+            let postId = child.key;
+
+            // Update avatar tác giả bài viết
             if (post.mssv === mssv) {
-              updates["threads/" + post.id + "/avatar"] = newAvatar;
+              updates[`threads/${postId}/avatar`] = newAvatar;
             }
+
+            // Update avatar người bình luận trong bài viết đó
             if (post.comments) {
               Object.keys(post.comments).forEach((cmtKey) => {
                 if (post.comments[cmtKey].mssv === mssv) {
-                  updates[`threads/${post.id}/comments/${cmtKey}/avatar`] =
+                  updates[`threads/${postId}/comments/${cmtKey}/avatar`] =
                     newAvatar;
                 }
               });
             }
           });
-          database.ref().update(updates);
+          database.ref().update(updates); // Cập nhật hàng loạt lên Firebase
         });
       }
-
       function dangXuatTaiKhoan() {
         if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
           localStorage.removeItem("current_logged_student");
@@ -3022,6 +3065,29 @@
           }
         });
       })();
+      function updateOnlineStatus() {
+        let student = JSON.parse(
+          localStorage.getItem("current_logged_student"),
+        );
+        if (!student) return;
+
+        let userRef = database.ref("online_users/" + student.id);
+
+        // Khi thoát trang, xóa trạng thái online
+        userRef.onDisconnect().remove();
+
+        // Ghi trạng thái online hiện tại
+        userRef.set({
+          name: student.name,
+          lastSeen: firebase.database.ServerValue.TIMESTAMP,
+        });
+      }
+
+      // LẮNG NGHE SỐ LƯỢNG NGƯỜI ĐANG ONLINE
+      database.ref("online_users").on("value", (snapshot) => {
+        let count = snapshot.numChildren();
+        document.getElementById("wau_count").innerText = count;
+      });
     </script>
   </body>
 </html>
