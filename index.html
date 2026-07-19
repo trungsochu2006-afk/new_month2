@@ -949,40 +949,13 @@
           font-size: 13px;
         }
       }
-      /* 👑 FIX TRIỆT ĐỂ LỖI BÓP MÉO AVATAR KHI ZOOM MÀN HÌNH */
-      .avatar-admin-vip {
-        position: relative !important;
-        overflow: visible !important;
-        isolation: isolate !important;
 
-        /* 🌟 THẦN CHÚ KHÓA CỨNG KÍCH THƯỚC VUÔNG 1:1 CHỐNG MÉO */
-        width: 38px !important;
-        height: 38px !important;
-        flex-shrink: 0 !important; /* Không cho phép các phần tử khác chèn ép làm méo khung */
-      }
-
-      .avatar-admin-vip::before {
-        content: "";
-        position: absolute;
-        top: -19px; /* Căn chỉnh lại một chút cho khít đầu */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 36px;
-        height: 30px;
-        background: url("./vuong_mieng1.webp") no-repeat center center;
-        background-size: contain;
-        z-index: 999999999 !important;
-        mix-blend-mode: screen;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-        clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 0% 85%);
-        animation: vuongMienNhayNhe 2s ease-in-out infinite alternate;
-      }
       @keyframes vuongMienNhayNhe {
         0% {
           transform: translateX(-50%) translateY(0);
         }
         100% {
-          transform: translateX(-50%) translateY(-2px);
+          transform: translateX(-50%) translateY(-3px);
         }
       }
 
@@ -1044,6 +1017,47 @@
       /* Banner chỉ hiển thị khi div home là active */
       #home:not(.active) .banner-box {
         display: none !important;
+      }
+      /* 1. Khung chứa avatar (vẫn tròn) */
+      .thread-card .thread-avatar {
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative; /* Quan trọng để vương miện định vị theo đây */
+      }
+
+      /* 2. Ảnh bên trong */
+      .thread-card .thread-avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+      }
+
+      /* 3. ĐẶC BIỆT: Fix vương miện cho Admin */
+      .avatar-admin-vip {
+        /* Chuyển sang visible để không bị cắt vương miện */
+        overflow: visible !important;
+        border-radius: 50% !important;
+      }
+
+      .avatar-admin-vip::before {
+        content: "";
+        position: absolute;
+        top: -20px !important; /* Đẩy lên trên khung tròn */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 30px !important;
+        background: url("./vuong_mieng1.webp") no-repeat center center;
+        background-size: contain;
+        z-index: 9999 !important;
+        pointer-events: none;
+        animation: vuongMienNhayNhe 2s ease-in-out infinite alternate;
       }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
