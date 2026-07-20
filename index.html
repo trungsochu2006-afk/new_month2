@@ -1325,9 +1325,9 @@
           "
         >
           <button
-            onclick="emergencyExit()"
+            onclick="nopBaiSom()"
             style="
-              background: #ff4d4d;
+              background: #28a745;
               color: white;
               border: none;
               padding: 10px 20px;
@@ -1338,9 +1338,10 @@
               transition: 0.2s;
             "
           >
-            ⚠️ Hủy làm bài
+            ✅ Nộp bài sớm
           </button>
         </div>
+
         <div id="quiz-subjects" class="quiz-sub-tab">
           <div class="mauchuquizi">CHỌN MÔN HỌC</div>
           <div class="subject-list">
@@ -1358,6 +1359,12 @@
               onclick="selectSubject('Pháp luật đại cương')"
             >
               Pháp luật đại cương
+            </button>
+            <button class="quiz-btn" onclick="selectSubject('Toán Tiểu Học')">
+              Toán Tiểu Học
+            </button>
+            <button class="quiz-btn" onclick="selectSubject('Tiếng Anh')">
+              Tiếng Anh
             </button>
           </div>
         </div>
@@ -1490,6 +1497,8 @@
                   <th>Hạng</th>
                   <th>Họ và Tên</th>
                   <th>MSSV</th>
+                  <th>Điểm số</th>
+                  <!-- Cột mới thêm -->
                   <th>Thời gian làm</th>
                 </tr>
               </thead>
@@ -1850,7 +1859,7 @@
         renderThreads();
       }
       // =========================================
-      // 📝 3. LOGIC HỆ THỐNG TRẮC NGHIỆM (QUIZ)
+      // 📝 LOGIC HỆ THỐNG TRẮC NGHIỆM (QUIZ) ĐÃ CẬP NHẬT NỘP SỚM & ÂM THANH
       // =========================================
       let selectedSubject = "";
       let selectedChapter = "";
@@ -1863,7 +1872,7 @@
       let quizStartTime = 0;
 
       const correctSound = new Audio("./dung.mp3");
-      const victorySound = new Audio("./10diem.mp3");
+      const victorySound = new Audio("./ailatrieuphu.mp3"); // 🌟 Thay bằng nhạc Ai Là Triệu Phú
       const wrongSound = new Audio("./danhram.mp3");
       const countdownSound = new Audio("./colen.mp3");
 
@@ -1874,193 +1883,174 @@
         }
       });
 
-      const originalQuestions = [
-        {
-          q: "______ use green as their symbol. Obviously, this color is associated with nature.",
-          options: {
-            A: "Novelists",
-            B: "Environmentalists",
-            C: "Receptionists",
-            D: "Pharmacists",
-          },
-          answer: "B",
+      // 🌟 KHO DỮ LIỆU CÂU HỎI PHÂN TÁCH ĐẾN 10 CHƯƠNG CHO TỪNG MÔN
+      // 🌟 KHO DỮ LIỆU CÂU HỎI MỞ RỘNG (KHÔNG GIỚI HẠN MÔN, TỐI ĐA 10 CHƯƠNG, MỖI CHƯƠNG CÓ NHIỀU CÂU HỎI TOÁN TIỂU HỌC)
+      const quizDatabase = {
+        "Toán Tiểu Học": {
+          "Chương 1": [
+            {
+              q: "Kết quả của phép tính: 15 + 28 bằng bao nhiêu?",
+              options: { A: "43", B: "42", C: "53", D: "33" },
+              answer: "A",
+            },
+            {
+              q: "Số liền sau của số 99 là số nào?",
+              options: { A: "98", B: "100", C: "101", D: "90" },
+              answer: "B",
+            },
+            {
+              q: "Tính: 7 x 8 = ?",
+              options: { A: "54", B: "56", C: "64", D: "49" },
+              answer: "B",
+            },
+          ],
+          "Chương 2": [
+            {
+              q: "1 tuần lễ có bao nhiêu ngày?",
+              options: { A: "5 ngày", B: "6 ngày", C: "7 ngày", D: "8 ngày" },
+              answer: "C",
+            },
+            {
+              q: "Hình vuông có mấy góc vuông?",
+              options: { A: "2 góc", B: "3 góc", C: "4 góc", D: "1 góc" },
+              answer: "C",
+            },
+            {
+              q: "Kết quả của phép chia: 45 : 5 = ?",
+              options: { A: "7", B: "8", C: "9", D: "6" },
+              answer: "C",
+            },
+          ],
+          "Chương 3": [
+            {
+              q: "Mẹ mua 24 cái kẹo, mẹ chia đều cho 3 anh em. Hỏi mỗi người được mấy cái kẹo?",
+              options: { A: "6 cái", B: "7 cái", C: "8 cái", D: "9 cái" },
+              answer: "C",
+            },
+            {
+              q: "Số lớn nhất có 2 chữ số là số nào?",
+              options: { A: "90", B: "99", C: "10", D: "98" },
+              answer: "B",
+            },
+            {
+              q: "2 giờ bằng bao nhiêu phút?",
+              options: {
+                A: "60 phút",
+                B: "100 phút",
+                C: "120 phút",
+                D: "180 phút",
+              },
+              answer: "C",
+            },
+          ],
         },
-        {
-          q: "You never get a second chance to make a good first ______.",
-          options: {
-            A: "affection",
-            B: "impression",
-            C: "emotion",
-            D: "energy",
-          },
-          answer: "B",
+        "Tiếng Anh": {
+          "Chương 1": [
+            {
+              q: "Kết ?",
+              options: { A: "43", B: "42", C: "53", D: "33" },
+              answer: "A",
+            },
+            {
+              q: "Số ?",
+              options: { A: "98", B: "100", C: "101", D: "90" },
+              answer: "B",
+            },
+            {
+              q: "Tính: 7 ",
+              options: { A: "54", B: "56", C: "64", D: "49" },
+              answer: "B",
+            },
+          ],
+          "Chương 2": [
+            {
+              q: "1 ?",
+              options: { A: "5 ngày", B: "6 ngày", C: "7 ngày", D: "8 ngày" },
+              answer: "C",
+            },
+            {
+              q: "Hình",
+              options: { A: "2 góc", B: "3 góc", C: "4 góc", D: "1 góc" },
+              answer: "C",
+            },
+            {
+              q: "Kết  ?",
+              options: { A: "7", B: "8", C: "9", D: "6" },
+              answer: "C",
+            },
+          ],
+          "Chương 3": [
+            {
+              q: "Mẹ đượcẹo?",
+              options: { A: "6 cái", B: "7 cái", C: "8 cái", D: "9 cái" },
+              answer: "C",
+            },
+            {
+              q: "Sốnào?",
+              options: { A: "90", B: "99", C: "10", D: "98" },
+              answer: "B",
+            },
+            {
+              q: "2 phút?",
+              options: {
+                A: "60 phút",
+                B: "100 phút",
+                C: "120 phút",
+                D: "180 phút",
+              },
+              answer: "C",
+            },
+          ],
         },
-        {
-          q: "The Colombian teacher has brought a fresh ______ to the subject.",
-          options: { A: "wage", B: "flow", C: "perspective", D: "statue" },
-          answer: "C",
+        "Tư tưởng Hồ Chí Minh": {
+          "Chương 1": [
+            {
+              q: "Tư tưởng Hồ Chí Minh là kết quả của sự vận dụng sáng tạo chủ nghĩa Mác - Lênin vào nước nào?",
+              options: { A: "Việt Nam", B: "Trung Quốc", C: "Lào", D: "Cuba" },
+              answer: "A",
+            },
+            {
+              q: "Hồ Chí Minh ra đi tìm đường cứu nước vào năm nào?",
+              options: { A: "1908", B: "1911", C: "1917", D: "1930" },
+              answer: "B",
+            },
+            {
+              q: "Bác Hồ sinh ra ở tỉnh nào?",
+              options: {
+                A: "Nghệ An",
+                B: "Hà Tĩnh",
+                C: "Thanh Hóa",
+                D: "Quảng Bình",
+              },
+              answer: "A",
+            },
+          ],
+          "Chương 2": [
+            {
+              q: "Tư ",
+              options: { A: "Việt Nam", B: "Trung Quốc", C: "Lào", D: "Cuba" },
+              answer: "A",
+            },
+            {
+              q: "Hồ ?",
+              options: { A: "1908", B: "1911", C: "1917", D: "1930" },
+              answer: "B",
+            },
+            {
+              q: "Bác ",
+              options: {
+                A: "Nghệ An",
+                B: "Hà Tĩnh",
+                C: "Thanh Hóa",
+                D: "Quảng Bình",
+              },
+              answer: "A",
+            },
+          ],
         },
-        {
-          q: "The ______ of taiko is that it's not about drumming. It's the unity of the drummers.",
-          options: { A: "identity", B: "similarity", C: "beat", D: "essence" },
-          answer: "D",
-        },
-        {
-          q: "The eyes are often a person's most interesting facial ______.",
-          options: { A: "signal", B: "figure", C: "feature", D: "character" },
-          answer: "C",
-        },
-        {
-          q: "After 30 minutes of swimming, we reached the river bank ______.",
-          options: {
-            A: "immediately",
-            B: "suddenly",
-            C: "politely",
-            D: "safely",
-          },
-          answer: "D",
-        },
-        {
-          q: "He put the parrot in a cage, but it ______.",
-          options: {
-            A: "got out",
-            B: "came across",
-            C: "gave away",
-            D: "took up",
-          },
-          answer: "A",
-        },
-        {
-          q: "One per cent of the world's population owns forty per cent of the world's ______.",
-          options: { A: "income", B: "wealth", C: "poverty", D: "salary" },
-          answer: "B",
-        },
-        {
-          q: "Work that is ______ or involves handling small objects will be at risk of automation.",
-          options: { A: "repetitive", B: "fast", C: "exciting", D: "lucky" },
-          answer: "A",
-        },
-        {
-          q: "I have been working for the company for a long time as they offered me a generous ______. So I don't have to worry much about my retirement.",
-          options: {
-            A: "pension scheme",
-            B: "paid holiday",
-            C: "promotion opportunities",
-            D: "working hours",
-          },
-          answer: "A",
-        },
-        {
-          q: "The truth is that the sun always ______ in the east.",
-          options: { A: "rose", B: "rising", C: "rises", D: "rise" },
-          answer: "C",
-        },
-        {
-          q: "I ______ for my sunglasses - Have you seen it?",
-          options: { A: "looks", B: "looked", C: "look", D: "am looking" },
-          answer: "D",
-        },
-        {
-          q: "I ______ really hard all morning, so I want to watch movies now.",
-          options: {
-            A: "worked",
-            B: "have worked",
-            C: "work",
-            D: "am working",
-          },
-          answer: "B",
-        },
-        {
-          q: "Have you been to the national museum ______?",
-          options: { A: "just", B: "ever", C: "yet", D: "already" },
-          answer: "C",
-        },
-        {
-          q: '\"What time ______ our sales manager?\" - \"At ten o\'clock yesterday morning.\"',
-          options: { A: "do you met", B: "met", C: "did you meet", D: "meets" },
-          answer: "C",
-        },
-        {
-          q: "Congressional candidates when ______?",
-          options: {
-            A: "the shop close",
-            B: "does the shop close",
-            C: "the shop closes",
-            D: "do the shop close",
-          },
-          answer: "C",
-        },
-        {
-          q: "What ______ him a few days before he went on a business trip?",
-          options: {
-            A: "had the company offered",
-            B: "are the company offering",
-            B: "does the company offer",
-            D: "did the company offer",
-          },
-          answer: "A",
-        },
-        {
-          q: "Have you got any plans after graduation? - Yes, I ______ some volunteering work.",
-          options: {
-            A: "might do",
-            B: "do",
-            C: "am going to do",
-            D: "will do",
-          },
-          answer: "C",
-        },
-        {
-          q: "The changes of our office's location are not important. They ______ affect our work.",
-          options: { A: "needn't", B: "mightn't", C: "will", D: "would" },
-          answer: "B",
-        },
-        {
-          q: "Is it true that Anna is leaving? - Yes, she ______ married next month.",
-          options: { A: "is getting", B: "gets", C: "got", D: "will" },
-          answer: "A",
-        },
-        {
-          q: "Peter/always/talk/during/movie/. /lt/so/annoying/!",
-          options: {
-            A: "Peter has always talk during the movie. It is so annoying!",
-            B: "Peter is always talking during the movie. It is so annyoing!",
-            C: "Peter always talked during the movie. It is so annoying!",
-            D: "Peter always is talking during the movie. It is so annoying!",
-          },
-          answer: "B",
-        },
-        {
-          q: "He/win/local/competition/since/he/learn/ski/?",
-          options: {
-            A: "Is he winning many local competitions since he has learned to ski?",
-            B: "Did he win any local competition since he has learned to ski?",
-            C: "Does he win many local competitions since he learned to ski?",
-            D: "Has he won any local competition since he learned to ski?",
-          },
-          answer: "D",
-        },
-        {
-          q: "When/first/meet/Mark/,/he/work/international/company/Paris.",
-          options: {
-            A: "When I first met Mark, he was working for an international company in Paris.",
-            B: "When I first meet Mark, he was working for an international company in Paris.",
-            C: "When I first met Mark, he is working for an international company in Paris.",
-            D: "When I first meet Mark, he has worked for an international company in Paris.",
-          },
-          answer: "A",
-        },
-        {
-          q: "We/not/probably/send/letter/old/friend/future.",
-          options: {
-            A: "We probably won't send a letter to our old friend in the future.",
-            B: "We don't probably send a letter to our old friend in the future.",
-            C: "We probably might not send a letter to our old friend in the future.",
-            D: "We were not probably sending a letter to our old friend in the future.",
-          },
-          answer: "A",
-        },
-      ];
+      };
+
+      let originalQuestions = []; // Biến chứa câu hỏi của chương đang làm
 
       function showQuizSubTab(subTabId) {
         document
@@ -2068,30 +2058,87 @@
           .forEach((tab) => (tab.style.display = "none"));
         document.getElementById(subTabId).style.display = "block";
       }
-
+      // 🌟 Khi chọn môn: Tự động quét từ Chương 1 đến 10, chỉ hiện chương nào có câu hỏi
       function selectSubject(subjectName) {
         selectedSubject = subjectName;
         document.getElementById("chapters-title").innerText =
           `MÔN: ${subjectName.toUpperCase()}`;
+
+        let chapterListContainer = document.querySelector(".chapter-list");
+        if (chapterListContainer && quizDatabase[subjectName]) {
+          chapterListContainer.innerHTML = ""; // Xóa danh sách cũ
+          let chaptersData = quizDatabase[subjectName];
+          let count = 0;
+
+          // Vòng lặp giới hạn tối đa 10 chương
+          for (let i = 1; i <= 10; i++) {
+            let chapterKey = `Chương ${i}`;
+            // Điều kiện: Chương phải tồn tại và có ít nhất 1 câu hỏi bên trong mới cho hiện nút
+            if (
+              chaptersData[chapterKey] &&
+              chaptersData[chapterKey].length > 0
+            ) {
+              let btn = document.createElement("button");
+              btn.className = "quiz-btn";
+              btn.innerText = chapterKey;
+              btn.onclick = function () {
+                selectChapter(chapterKey);
+              };
+              chapterListContainer.appendChild(btn);
+              count++;
+            }
+          }
+
+          // Nếu môn đó hoàn toàn chưa có chương nào có câu hỏi
+          if (count === 0) {
+            chapterListContainer.innerHTML = `<div style="color:#777; text-align:center; padding:10px;">Chưa có chương nào có câu hỏi!</div>`;
+          }
+        }
+
         showQuizSubTab("quiz-chapters");
       }
 
       function backToSubjects() {
+        tatTatCaNhacQuiz();
         showQuizSubTab("quiz-subjects");
       }
+
+      // 🌟 Khi bấm chọn chương cụ thể: Bốc đúng bộ câu hỏi của chương đó ra để làm
       function selectChapter(chapterName) {
         selectedChapter = chapterName;
-        demnguoc();
+
+        if (
+          quizDatabase[selectedSubject] &&
+          quizDatabase[selectedSubject][selectedChapter]
+        ) {
+          originalQuestions = quizDatabase[selectedSubject][selectedChapter];
+        } else {
+          originalQuestions = [
+            {
+              q: "Chương này đang cập nhật câu hỏi...",
+              options: {
+                A: "Đang cập nhật",
+                B: "Đang cập nhật",
+                C: "Đang cập nhật",
+                D: "Đang cập nhật",
+              },
+              answer: "A",
+            },
+          ];
+        }
+
+        demnguoc(); // Bắt đầu đếm ngược 3 giây vào bài thi
       }
       function backToChapters() {
-        victorySound.pause();
-        victorySound.currentTime = 0;
+        tatTatCaNhacQuiz();
         showQuizSubTab("quiz-chapters");
       }
 
       function demnguoc() {
         showQuizSubTab("quiz-countdown");
-        document.getElementById("emergency-exit-box").style.display = "block";
+        let exitBox = document.getElementById("emergency-exit-box");
+        if (exitBox) exitBox.style.display = "block"; // Hiện nút Nộp bài sớm khi làm bài
+
         let count = 3;
         const timerEl = document.getElementById("countdown-timer");
         timerEl.innerText = count;
@@ -2109,6 +2156,9 @@
       }
 
       function initQuizGame() {
+        let exitBox = document.getElementById("emergency-exit-box");
+        if (exitBox) exitBox.style.display = "block";
+
         questionsPool = JSON.parse(JSON.stringify(originalQuestions));
         for (let i = questionsPool.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -2204,6 +2254,7 @@
           renderQuestion();
         }
       }
+
       function nextQuestion() {
         let activeList = isRepeatMode ? wrongQuestionsQueue : questionsPool;
         if (currentQuestionIdx < activeList.length - 1) {
@@ -2249,32 +2300,117 @@
         }
       }
 
+      // 🌟 HÀM KẾT THÚC HOẶC NỘP SỚM BÀI THI
       function ketthucbaithi() {
         let totalDurationSeconds = Math.round(
           (Date.now() - quizStartTime) / 1000,
         );
         saveToLeaderboard(totalDurationSeconds);
-        document.getElementById("emergency-exit-box").style.display = "none";
+
+        // Ẩn nút nộp bài đi khi đã vào màn hình kết quả
+        let exitBox = document.getElementById("emergency-exit-box");
+        if (exitBox) exitBox.style.display = "none";
+
         victorySound.currentTime = 0;
         victorySound.play().catch(() => {});
         showQuizSubTab("quiz-result");
-        document.getElementById("score-text").innerText = "10.00 / 10 Điểm";
-        document.getElementById("summary-text").innerHTML =
-          `Chúc mừng học viên: <b>${currentStudent.name}</b> (MSSV: ${currentStudent.id})!<br>Bạn đã sửa đúng tất cả các câu hỏi của <b>${selectedChapter}</b> - <b>${selectedSubject}</b>.<br>Thời gian hoàn thành chu trình: <b>${totalDurationSeconds} giây</b>.`;
+
+        const totalQ = originalQuestions.length;
+        const correctCount = correctAnswersSet.size;
+        let finalScore = Math.round(correctCount * (10 / totalQ) * 100) / 100;
+
+        document.getElementById("score-text").innerText =
+          `${finalScore.toFixed(2)} / 10 Điểm`;
+
+        // Phân loại thông báo dựa trên số điểm đạt được
+        if (finalScore === 10) {
+          document.querySelector(".result-screen .mauchuquizi").innerText =
+            "Ô MAI CA ĐÚNG HẾT RỒI KÌA";
+          document.getElementById("summary-text").innerHTML =
+            `Chúc mừng học viên: <b>${currentStudent.name}</b> (MSSV: ${currentStudent.id})!<br>Bạn đã hoàn thành chính xác 100% tất cả các câu hỏi của <b>${selectedChapter}</b> - <b>${selectedSubject}</b>.<br>Thời gian hoàn thành: <b>${totalDurationSeconds} giây</b>.`;
+        } else {
+          document.querySelector(".result-screen .mauchuquizi").innerText =
+            "LẦN SAU CỐ GẮNG HƠN NHÉ";
+          document.getElementById("summary-text").innerHTML =
+            `Học viên: <b>${currentStudent.name}</b> (MSSV: ${currentStudent.id}) đã nộp bài sớm.<br>Số câu đúng: <b>${correctCount}/${totalQ} câu</b> (${finalScore.toFixed(2)} điểm).<br>Thời gian làm bài: <b>${totalDurationSeconds} giây</b>.`;
+        }
+      }
+
+      function nopBaiSom() {
+        if (
+          confirm("Bạn có chắc chắn muốn nộp bài sớm và xem kết quả không?")
+        ) {
+          tatTatCaNhacQuiz();
+          ketthucbaithi();
+        }
+      }
+
+      function tatTatCaNhacQuiz() {
+        if (typeof victorySound !== "undefined") {
+          victorySound.pause();
+          victorySound.currentTime = 0;
+        }
+        if (typeof countdownSound !== "undefined") {
+          countdownSound.pause();
+          countdownSound.currentTime = 0;
+        }
+      }
+
+      // Tự động tắt nhạc khi rời khỏi tab trắc nghiệm hoặc chuyển trang
+      function showTab(tab) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        let target = document.getElementById(tab);
+        if (target) target.classList.add("active");
+
+        // Nếu không ở tab quiz thì tắt sạch nhạc quiz đang phát
+        if (tab !== "quiz") {
+          tatTatCaNhacQuiz();
+          let exitBox = document.getElementById("emergency-exit-box");
+          if (exitBox) exitBox.style.display = "none";
+        }
+
+        const bannerPC = document.getElementById("carousel-container-pc");
+        const bannerMobile = document.getElementById(
+          "carousel-container-mobile",
+        );
+
+        if (tab === "home") {
+          if (bannerPC) bannerPC.style.display = "block";
+          if (bannerMobile) bannerMobile.style.display = "block";
+        } else {
+          if (bannerPC) bannerPC.style.display = "none";
+          if (bannerMobile) bannerMobile.style.display = "none";
+        }
       }
 
       function saveToLeaderboard(duration) {
         let data = localStorage.getItem("quiz_leaderboard");
         let leaderboard = data ? JSON.parse(data) : [];
+
+        let correctCount = correctAnswersSet.size;
+        let totalQ = originalQuestions.length;
+        let currentScore = Math.round(correctCount * (10 / totalQ) * 100) / 100;
+
         let existingRecordIndex = leaderboard.findIndex(
           (item) =>
             item.id === currentStudent.id &&
             item.subject === selectedSubject &&
             item.chapter === selectedChapter,
         );
+
         if (existingRecordIndex !== -1) {
-          if (duration < leaderboard[existingRecordIndex].duration) {
+          let oldRecord = leaderboard[existingRecordIndex];
+          let oldScore = oldRecord.score !== undefined ? oldRecord.score : 10;
+
+          if (
+            currentScore > oldScore ||
+            (currentScore === oldScore && duration < oldRecord.duration)
+          ) {
             leaderboard[existingRecordIndex].duration = duration;
+            leaderboard[existingRecordIndex].score = currentScore;
+            leaderboard[existingRecordIndex].correctCount = correctCount;
             leaderboard[existingRecordIndex].timestamp = Date.now();
           }
         } else {
@@ -2284,6 +2420,8 @@
             subject: selectedSubject,
             chapter: selectedChapter,
             duration: duration,
+            score: currentScore,
+            correctCount: correctCount,
             timestamp: Date.now(),
           });
         }
@@ -2293,59 +2431,73 @@
       function showLeaderboardTab() {
         document.getElementById("leaderboard-title").innerText =
           `BẢNG XẾP HẠNG MÔN: ${selectedSubject.toUpperCase()}`;
+
         let data = localStorage.getItem("quiz_leaderboard");
         let leaderboard = data ? JSON.parse(data) : [];
         let subjectFiltered = leaderboard.filter(
           (item) => item.subject === selectedSubject,
         );
-        subjectFiltered.sort((a, b) => a.duration - b.duration);
+
+        // Sắp xếp: Điểm cao trước, nếu bằng điểm thì xét thời gian nhanh hơn
+        subjectFiltered.sort((a, b) => {
+          let scoreA = a.score !== undefined ? a.score : 10;
+          let scoreB = b.score !== undefined ? b.score : 10;
+          if (scoreB !== scoreA) {
+            return scoreB - scoreA;
+          }
+          return a.duration - b.duration;
+        });
+
         let tbody = document.getElementById("leaderboard-data");
         tbody.innerHTML = "";
+
         if (subjectFiltered.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" style="color:#777;">Chưa có dữ liệu xếp hạng cho môn này!</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="color:#777;">Chưa có dữ liệu xếp hạng cho môn này!</td></tr>`;
         } else {
           subjectFiltered.forEach((student, index) => {
-            tbody.innerHTML += `<tr><td><b>${index + 1}</b></td><td>${student.name}</td><td>${student.id}</td><td><span style="color:#28a745; font-weight:bold;">${student.duration} giây</span> (${student.chapter})</td></tr>`;
+            let mssvBaoMat = student.id
+              ? student.id.substring(0, 3) + "***"
+              : "";
+            let diemSo = student.score !== undefined ? student.score : "10.00";
+            let soCau =
+              student.correctCount !== undefined
+                ? student.correctCount
+                : originalQuestions.length;
+
+            tbody.innerHTML += `<tr>
+              <td><b>${index + 1}</b></td>
+              <td>${student.name}</td>
+              <td>${mssvBaoMat}</td>
+              <td><span style="color:#0058f0; font-weight:bold;">${diemSo}đ</span> (${soCau}/${originalQuestions.length} câu)</td>
+              <td><span style="color:#28a745; font-weight:bold;">${student.duration} giây</span> (${student.chapter})</td>
+            </tr>`;
           });
         }
         showQuizSubTab("quiz-leaderboard");
       }
 
       function goBackFromLeaderboard() {
-        document.getElementById("emergency-exit-box").style.display = "none";
-        if (correctAnswersSet.size === originalQuestions.length) {
+        tatTatCaNhacQuiz();
+        let exitBox = document.getElementById("emergency-exit-box");
+        if (exitBox) exitBox.style.display = "none";
+
+        if (
+          correctAnswersSet.size === originalQuestions.length &&
+          document.getElementById("quiz-result").style.display === "block"
+        ) {
           showQuizSubTab("quiz-result");
         } else {
           showQuizSubTab("quiz-chapters");
         }
       }
+
       function restartQuiz() {
-        victorySound.pause();
-        victorySound.currentTime = 0;
+        tatTatCaNhacQuiz();
         demnguoc();
       }
-      function thoatchuongtrinh() {
-        if (typeof victorySound !== "undefined") {
-          victorySound.pause();
-          victorySound.currentTime = 0;
-        }
-        isRepeatMode = false;
-        wrongQuestionsQueue = [];
-        correctAnswersSet.clear();
-        userResponses = {};
-        currentQuestionIdx = 0;
-        showTab("quiz");
-        showQuizSubTab("quiz-subjects");
-      }
+
       function emergencyExit() {
-        if (typeof victorySound !== "undefined") {
-          victorySound.pause();
-          victorySound.currentTime = 0;
-        }
-        if (typeof countdownSound !== "undefined") {
-          countdownSound.pause();
-          countdownSound.currentTime = 0;
-        }
+        tatTatCaNhacQuiz();
         let exitBox = document.getElementById("emergency-exit-box");
         if (exitBox) exitBox.style.display = "none";
         isRepeatMode = false;
@@ -2356,7 +2508,6 @@
         showTab("quiz");
         showQuizSubTab("quiz-subjects");
       }
-
       // =========================================
       // 💬 4. LOGIC MẠNG XÃ HỘI PHENIKAA THREADS
       // =========================================
@@ -3105,6 +3256,15 @@
           displayEl.innerText = count;
         }
       });
+      function nopBaiSom() {
+        if (confirm("Bạn có chắc chắn muốn nộp bài và xem kết quả không?")) {
+          if (typeof countdownSound !== "undefined") {
+            countdownSound.pause();
+            countdownSound.currentTime = 0;
+          }
+          ketthucbaithi();
+        }
+      }
     </script>
   </body>
 </html>
