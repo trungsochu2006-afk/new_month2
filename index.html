@@ -1872,7 +1872,8 @@
       let quizStartTime = 0;
 
       const correctSound = new Audio("./dung.mp3");
-      const victorySound = new Audio("./ailatrieuphu.mp3"); // 🌟 Thay bằng nhạc Ai Là Triệu Phú
+      const tenPointsSound = new Audio("./10diem.mp3"); // 🌟 Nhạc dành riêng cho 10 điểm tuyệt đối
+      const earlySubmitSound = new Audio("./ailatrieuphu.mp3"); // 🌟 Nhạc dành cho nộp sớm / điểm khác
       const wrongSound = new Audio("./danhram.mp3");
       const countdownSound = new Audio("./colen.mp3");
 
@@ -2307,35 +2308,40 @@
         );
         saveToLeaderboard(totalDurationSeconds);
 
-        // Ẩn nút nộp bài đi khi đã vào màn hình kết quả
         let exitBox = document.getElementById("emergency-exit-box");
         if (exitBox) exitBox.style.display = "none";
 
-        victorySound.currentTime = 0;
-        victorySound.play().catch(() => {});
         showQuizSubTab("quiz-result");
 
         const totalQ = originalQuestions.length;
         const correctCount = correctAnswersSet.size;
-        let finalScore = Math.round(correctCount * (10 / totalQ) * 100) / 100;
+        let finalScore =
+          totalQ > 0 ? Math.round(correctCount * (10 / totalQ) * 100) / 100 : 0;
 
         document.getElementById("score-text").innerText =
           `${finalScore.toFixed(2)} / 10 Điểm`;
 
-        // Phân loại thông báo dựa trên số điểm đạt được
+        // 🌟 Phân loại dựa trên điểm số thực tế
         if (finalScore === 10) {
+          // Nếu đúng tuyệt đối 10 điểm: Phát nhạc 10diem.mp3 chuẩn không cần chỉnh
+          tenPointsSound.currentTime = 0;
+          tenPointsSound.play().catch(() => {});
+
           document.querySelector(".result-screen .mauchuquizi").innerText =
             "Ô MAI CA ĐÚNG HẾT RỒI KÌA";
           document.getElementById("summary-text").innerHTML =
             `Chúc mừng học viên: <b>${currentStudent.name}</b> (MSSV: ${currentStudent.id})!<br>Bạn đã hoàn thành chính xác 100% tất cả các câu hỏi của <b>${selectedChapter}</b> - <b>${selectedSubject}</b>.<br>Thời gian hoàn thành: <b>${totalDurationSeconds} giây</b>.`;
         } else {
+          // Nếu nộp sớm hoặc điểm khác: Phát nhạc Ai Là Triệu Phú và thông báo cố gắng hơn
+          earlySubmitSound.currentTime = 0;
+          earlySubmitSound.play().catch(() => {});
+
           document.querySelector(".result-screen .mauchuquizi").innerText =
             "LẦN SAU CỐ GẮNG HƠN NHÉ";
           document.getElementById("summary-text").innerHTML =
-            `Học viên: <b>${currentStudent.name}</b> (MSSV: ${currentStudent.id}) đã nộp bài sớm.<br>Số câu đúng: <b>${correctCount}/${totalQ} câu</b> (${finalScore.toFixed(2)} điểm).<br>Thời gian làm bài: <b>${totalDurationSeconds} giây</b>.`;
+            `Học viên: <b>${currentStudent.name}</b> (MSSV: ${currentStudent.id}) đã nộp bài.<br>Số câu đúng: <b>${correctCount}/${totalQ} câu</b> (${finalScore.toFixed(2)} điểm).<br>Thời gian làm bài: <b>${totalDurationSeconds} giây</b>.`;
         }
       }
-
       function nopBaiSom() {
         if (
           confirm("Bạn có chắc chắn muốn nộp bài sớm và xem kết quả không?")
@@ -2346,9 +2352,13 @@
       }
 
       function tatTatCaNhacQuiz() {
-        if (typeof victorySound !== "undefined") {
-          victorySound.pause();
-          victorySound.currentTime = 0;
+        if (typeof tenPointsSound !== "undefined") {
+          tenPointsSound.pause();
+          tenPointsSound.currentTime = 0;
+        }
+        if (typeof earlySubmitSound !== "undefined") {
+          earlySubmitSound.pause();
+          earlySubmitSound.currentTime = 0;
         }
         if (typeof countdownSound !== "undefined") {
           countdownSound.pause();
