@@ -1018,40 +1018,36 @@
       #home:not(.active) .banner-box {
         display: none !important;
       }
-      /* 1. Khung chứa avatar (vẫn tròn) */
+      /* 1. Mở rộng không gian phía trên cho khung avatar bài đăng */
       .thread-card .thread-avatar {
         width: 38px !important;
         height: 38px !important;
         border-radius: 50% !important;
-        overflow: hidden !important;
+        overflow: visible !important; /* Đổi từ hidden thành visible để vương miện không bị cắt */
         flex-shrink: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        position: relative; /* Quan trọng để vương miện định vị theo đây */
+        position: relative !important;
+        margin-top: 8px !important; /* Đẩy khung ảnh xuống một chút để chừa chỗ cho vương miện bay lên đầu */
       }
 
-      /* 2. Ảnh bên trong */
+      /* 2. Đảm bảo ảnh tròn bên trong */
       .thread-card .thread-avatar img {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
-      }
-
-      /* 3. ĐẶC BIỆT: Fix vương miện cho Admin */
-      .avatar-admin-vip {
-        /* Chuyển sang visible để không bị cắt vương miện */
-        overflow: visible !important;
         border-radius: 50% !important;
       }
 
+      /* 3. Chỉnh lại vị trí vương miện bài đăng cho giống bên dưới */
       .avatar-admin-vip::before {
         content: "";
         position: absolute;
-        top: -20px !important; /* Đẩy lên trên khung tròn */
+        top: -20px !important; /* Đẩy vương miện lên ngự trên đầu ảnh */
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 40px !important;
+        width: 35px !important;
         height: 30px !important;
         background: url("./vuong_mieng1.webp") no-repeat center center;
         background-size: contain;
@@ -1290,16 +1286,6 @@
           <img src="./baner3.jpg" alt="Slide 3" />
           <img src="./baner4.jpg" alt="Slide 4" />
         </div>
-      </div>
-    </div>
-
-    <!-- Dành cho điện thoại -->
-    <div id="carousel-container-mobile" class="banner-box">
-      <div id="carousel-track-mobile" class="track">
-        <img src="./baner1.jpg" alt="Slide 1" />
-        <img src="./baner2.jpg" alt="Slide 2" />
-        <img src="./baner3.jpg" alt="Slide 3" />
-        <img src="./baner4.jpg" alt="Slide 4" />
       </div>
     </div>
 
