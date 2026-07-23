@@ -1041,7 +1041,7 @@ nav button:hover {
   transform: translateX(-50%) !important;
   width: 35px !important;
   height: 30px !important;
-  background: url("photo/vuong_mieng1.webp") no-repeat center center;
+  background: url("../photo/vuong_mieng1.webp") no-repeat center center;
   background-size: contain;
   z-index: 9999 !important;
   pointer-events: none;

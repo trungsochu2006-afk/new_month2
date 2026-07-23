@@ -157,40 +157,50 @@ function showQuizSubTab(subTabId) {
 // Chức năng: Tự động quét từ Chương 1 đến Chương 10, kiểm tra dữ liệu và hiển thị danh sách các chương có sẵn câu hỏi của môn học được chọn.
 function selectSubject(subjectName) {
   selectedSubject = subjectName;
-  document.getElementById("chapters-title").innerText =
-    `MÔN: ${subjectName.toUpperCase()}`;
+  const subjectData = quizDatabase[subjectName];
 
-  let chapterListContainer = document.querySelector(".chapter-list");
-  if (chapterListContainer && quizDatabase[subjectName]) {
-    chapterListContainer.innerHTML = ""; // Xóa danh sách cũ
-    let chaptersData = quizDatabase[subjectName];
-    let count = 0;
+  const chapterListContainer = document.querySelector(".chapter-list");
 
-    // Vòng lặp giới hạn tối đa 10 chương
-    for (let i = 1; i <= 10; i++) {
-      let chapterKey = `Chương ${i}`;
-      // Điều kiện: Chương phải tồn tại và có ít nhất 1 câu hỏi bên trong mới cho hiện nút
-      if (chaptersData[chapterKey] && chaptersData[chapterKey].length > 0) {
-        let btn = document.createElement("button");
+  if (chapterListContainer && subjectData) {
+    // Xóa danh sách cũ trước khi render mới
+    chapterListContainer.innerHTML = "";
+
+    for (let chapterName in subjectData) {
+      if (Array.isArray(subjectData[chapterName])) {
+        const btn = document.createElement("button");
         btn.className = "quiz-btn";
-        btn.innerText = chapterKey;
+
+        // 🌟 Dùng Flexbox để tách tên chương và số lượng câu sang 2 bên
+        btn.style.display = "flex";
+        btn.style.justifyContent = "space-between";
+        btn.style.alignItems = "center";
+
+        // HTML bên trong nút bấm
+        btn.innerHTML = `
+      <span>📖 ${chapterName}</span>
+      <span style="background: rgba(0,0,0,0.08); padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #ffffff;">
+        ${subjectData[chapterName].length} câu
+      </span>
+    `;
+
         btn.onclick = function () {
-          selectChapter(chapterKey);
+          selectChapter(chapterName);
         };
+
         chapterListContainer.appendChild(btn);
-        count++;
       }
     }
-
-    // Nếu môn đó hoàn toàn chưa có chương nào có câu hỏi
-    if (count === 0) {
-      chapterListContainer.innerHTML = `<div style="color:#777; text-align:center; padding:10px;">Chưa có chương nào có câu hỏi!</div>`;
+  } else {
+    // 🌟 THÊM ĐOẠN NÀY ĐỂ BÁO LỖI NẾU MÔN CHƯA CÓ DATA, TRÁNH HIỆN NHẦM
+    if (chapterListContainer) {
+      chapterListContainer.innerHTML =
+        "<p style='color: red; text-align: center; font-weight: bold;'>Môn này đang cập nhật câu hỏi, vui lòng chọn môn khác!</p>";
     }
   }
 
-  showQuizSubTab("quiz-chapters");
+  document.getElementById("quiz-subjects").style.display = "none";
+  document.getElementById("quiz-chapters").style.display = "block";
 }
-
 // Chức năng: Tắt toàn bộ âm thanh trắc nghiệm đang phát và quay trở lại màn hình chọn môn học.
 function backToSubjects() {
   tatTatCaNhacQuiz();
@@ -223,7 +233,6 @@ function selectChapter(chapterName) {
 
   demnguoc(); // Bắt đầu đếm ngược 3 giây vào bài thi
 }
-
 // Chức năng: Dừng âm thanh trắc nghiệm và điều hướng quay trở lại màn hình danh sách các chương của môn học.
 function backToChapters() {
   tatTatCaNhacQuiz();
